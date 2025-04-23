@@ -3,11 +3,5 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/dashboard": "pages/dashboard.js",
-  "/dashboard/userProfile": "pages/dashboard/userProfile.js",
-  "/": "pages/index.js",
-  "/dashboard/products": "pages/dashboard/products.js",
-  "/dashboard/overview": "pages/dashboard/overview.js",
-  "/dashboard/sales": "pages/dashboard/sales.js",
-  "/dashboard/settings": "pages/dashboard/settings.js",
-  "/dashboard/orders": "pages/dashboard/orders.js"
+  "/": "pages/index.js"
 }

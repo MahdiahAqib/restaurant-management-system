@@ -1,0 +1,67 @@
+/* Sidebar Styles */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background-color: #3a3a3a; /* Dark grey with a red tone */
+  padding: 1.5rem 1rem;
+  position: fixed;
+  left: 0;
+  top: 0;
+  color: #f0f0f0; /* Light grey text */
+  transition: background-color 0.3s ease;
+  z-index: 1000; /* Keeps it on top */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sidebar logo styles */
+.logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #ff5c5c; /* Red color for the logo */
+  transition: color 0.3s ease;
+}
+
+/* Navigation list styles */
+.navList {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Navigation links */
+.navList li a {
+  text-decoration: none;
+  color: #ccc; /* Light grey */
+  font-size: 1rem;
+  transition: color 0.3s ease, background-color 0.3s ease; /* Added transition */
+  padding: 10px 15px; /* Add padding to give space around text */
+  border-radius: 5px; /* Slightly rounded corners */
+  display: block;
+}
+
+/* Hover effect on sidebar links */
+.navList li a:hover {
+  color: #fff; /* White text on hover */
+  background-color: #ff5c5c; /* Red background on hover */
+}
+
+/* Sidebar hover effect (changing sidebar background on hover) */
+.sidebar:hover {
+  background-color: #d23b3b; /* Darker grey on hover */
+}
+
+/* Ensuring sidebar remains fixed and static */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1000; /* Keeps it on top */
+  transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}

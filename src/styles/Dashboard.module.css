@@ -1,0 +1,139 @@
+/* styles/Dashboard.module.css */
+
+.dashboardLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #121212;
+  color: white;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #1e1e1e;
+  padding: 1rem;
+}
+
+.sidebarTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.sidebarMenu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebarMenu li {
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.container {
+  flex: 1;
+  padding: 2rem;
+}
+
+.heading {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff5c5c;
+  margin-bottom: 2rem;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.metricCard {
+  background-color: #1e1e1e;    /* light grey background */
+  color: inherit;               /* keep existing text color or inherit from parent */
+  padding: 1rem;                /* ensure some padding */
+  border-radius: 8px;           /* optional: rounded corners */
+  text-align: center;           /* center-align all text */
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.metricCard:hover {
+  box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.7);
+}
+
+
+.metricTitle {
+  color: #aaa;
+  margin-bottom: 0.5rem;
+}
+
+.chartBox {
+  width: 100%;  /* Ensures the chart takes up the full width */
+  height: 450px; /* Adjust height for the charts */
+  margin-bottom: 1rem; /* Add some space between charts */
+  background-color: #1e1e1e; /* Set a background color for chart boxes */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  padding: 1rem; /* Optional: Add some padding inside the chart box */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional: Add some shadow for effect */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Center align the chart inside the box */
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem 2rem;  /* Add horizontal space between chart boxes (1rem vertical, 2rem horizontal) */
+}
+
+.chartBox canvas {
+  max-width: 80%; /* Ensures the canvas takes up 100% of the box width */
+  max-height: 95%; /* Ensures the canvas takes up 100% of the box height */
+}
+
+
+.bottomGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Adjust the table size for better alignment */
+.tableBox {
+  margin-top: 2rem;
+}
+
+.table {
+  width: 100%;
+  font-size: 0.9rem; /* Adjust the table font size for consistency */
+}
+
+
+.chartTitle {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.table th, .table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.timeFrameDropdown {
+  position: absolute;
+  top: 450px;
+  right: 62px;
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 1px solid #ddd; /* Border for better visibility */
+  background-color: #FF6384; /* Example color, change it as per your theme */
+  color: white; /* White text for contrast */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition on hover */
+}
+
+.timeFrameDropdown:hover {
+  background-color: #D85B6D; /* Slightly darker shade for hover effect */
+}
+
