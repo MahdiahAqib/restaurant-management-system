@@ -7,12 +7,12 @@ export default function Sidebar() {
       <h2 className={styles.logo}>RestroAdmin</h2>
       <nav>
         <ul className={styles.navList}>
-          <li><Link href="/dashboard">Dashboard</Link></li>
-          <li><Link href="/reservations">Reservations</Link></li>
-          <li><Link href="/orders">Orders</Link></li>
-          <li><Link href="/staff">Staff</Link></li>
-          <li><Link href="/analytics">Analytics</Link></li>
-          <li><Link href="/settings">Settings</Link></li>
+          <li><Link href="/admin/dashboard">Dashboard</Link></li>
+          <li><Link href="/admin/reservations">Reservations</Link></li>
+          <li><Link href="/admin/orders">Orders</Link></li>
+          <li><Link href="/admin/staff">Staff</Link></li>
+          <li><Link href="/admin/customers">Customers</Link></li>
+          <li><Link href="/admin/settings">Settings</Link></li>
         </ul>
       </nav>
     </div>

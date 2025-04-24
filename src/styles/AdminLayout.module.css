@@ -1,0 +1,8 @@
+.mainContent {
+    margin-left: 220px; /* Matches sidebar width */
+    padding: 0 2rem 2rem 4rem; /* No top padding */
+    width: calc(100% - 220px);
+  }
+
+  
+  

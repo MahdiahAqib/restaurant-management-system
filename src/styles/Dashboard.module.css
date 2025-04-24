@@ -1,5 +1,10 @@
 /* styles/Dashboard.module.css */
 
+.content {
+  margin-left: 500px; /* Adjust the left margin to the width of the sidebar */
+  padding: 1rem;
+}
+
 .dashboardLayout {
   display: flex;
   min-height: 100vh;
@@ -7,37 +12,17 @@
   color: white;
 }
 
-.sidebar {
-  width: 250px;
-  background-color: #1e1e1e;
-  padding: 1rem;
-}
-
-.sidebarTitle {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.sidebarMenu {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebarMenu li {
-  margin-bottom: 1rem;
-  cursor: pointer;
-}
-
 .container {
   flex: 1;
-  padding: 2rem;
+  padding: 4rem 2rem; /* Reduced padding at the top */
+  margin-top: -50px; /* Move the content upwards */
 }
 
 .heading {
   font-size: 2rem;
   font-weight: bold;
   color: #ff5c5c;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem; /* Reduced the space below heading */
 }
 
 .metricsGrid {
@@ -60,29 +45,29 @@
   box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.7);
 }
 
-
 .metricTitle {
   color: #aaa;
   margin-bottom: 0.5rem;
 }
 
 .chartBox {
-  width: 100%;  /* Ensures the chart takes up the full width */
-  height: 450px; /* Adjust height for the charts */
-  margin-bottom: 1rem; /* Add some space between charts */
-  background-color: #1e1e1e; /* Set a background color for chart boxes */
-  border-radius: 8px; /* Optional: Add rounded corners */
-  padding: 1rem; /* Optional: Add some padding inside the chart box */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional: Add some shadow for effect */
   display: flex;
-  justify-content: center;
-  align-items: center; /* Center align the chart inside the box */
+  flex-direction: column; /* stack title and chart */
+  align-items: flex-start; /* title aligns left */
+  justify-content: flex-start;
+  padding: 1rem;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  height: 450px;
 }
 
-.chartGrid {
+
+.chartRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem 2rem;  /* Add horizontal space between chart boxes (1rem vertical, 2rem horizontal) */
+  gap: 1rem 2rem;
+  margin-bottom: 2rem; /* Adds space between rows */
 }
 
 .chartBox canvas {
@@ -91,13 +76,6 @@
 }
 
 
-.bottomGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-/* Adjust the table size for better alignment */
 .tableBox {
   margin-top: 2rem;
 }
@@ -107,11 +85,25 @@
   font-size: 0.9rem; /* Adjust the table font size for consistency */
 }
 
-
 .chartTitle {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-weight: bold;
+  font-size: 1.1rem;
+  align-self: flex-start; /* ensures it stays left-aligned */
 }
+
+.chartContent {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chartGrid:not(:last-of-type) {
+  margin-bottom: 2rem;
+}
+
 
 .table th, .table td {
   padding: 0.5rem;
@@ -136,4 +128,3 @@
 .timeFrameDropdown:hover {
   background-color: #D85B6D; /* Slightly darker shade for hover effect */
 }
-

@@ -1,29 +1,36 @@
-/* Sidebar Styles */
+/* Sidebar.module.css */
 .sidebar {
-  width: 220px;
-  height: 100vh;
-  background-color: #3a3a3a; /* Dark grey with a red tone */
+  width: 220px;          /* Sidebar width */
+  height: 100vh;         /* Full height */
+  background-color: #3a3a3a;
   padding: 1.5rem 1rem;
-  position: fixed;
-  left: 0;
+  position: fixed;       /* Fixed position to stay on the left */
   top: 0;
-  color: #f0f0f0; /* Light grey text */
+  left: 0;
+  color: #f0f0f0;
   transition: background-color 0.3s ease;
-  z-index: 1000; /* Keeps it on top */
+  z-index: 1000;         /* Keeps sidebar on top */
   display: flex;
   flex-direction: column;
+  box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2); /* Optional: adds shadow to sidebar */
 }
 
-/* Sidebar logo styles */
 .logo {
   font-size: 1.4rem;
   font-weight: bold;
   margin-bottom: 2rem;
-  color: #ff5c5c; /* Red color for the logo */
+  color: #ff5c5c;
   transition: color 0.3s ease;
+  margin-top: -23px;       /* Moves the logo upward */
+  height: 60px;            /* Matches header height */
+  display: flex;
+  align-items: center;     /* Vertically center the text */
+  border-bottom: 1.5px solid white;  /* White line with slight transparency */
+  padding-bottom: 0.5rem;  /* Adds space between text and line */
+  width: 100%;
 }
 
-/* Navigation list styles */
+
 .navList {
   list-style: none;
   padding: 0;
@@ -32,36 +39,21 @@
   gap: 1rem;
 }
 
-/* Navigation links */
 .navList li a {
   text-decoration: none;
-  color: #ccc; /* Light grey */
+  color: #ccc;
   font-size: 1rem;
-  transition: color 0.3s ease, background-color 0.3s ease; /* Added transition */
-  padding: 10px 15px; /* Add padding to give space around text */
-  border-radius: 5px; /* Slightly rounded corners */
+  transition: color 0.3s ease, background-color 0.3s ease;
+  padding: 10px 15px;
+  border-radius: 5px;
   display: block;
 }
 
-/* Hover effect on sidebar links */
 .navList li a:hover {
-  color: #fff; /* White text on hover */
-  background-color: #ff5c5c; /* Red background on hover */
+  color: #fff;
+  background-color: #ff5c5c;
 }
 
-/* Sidebar hover effect (changing sidebar background on hover) */
 .sidebar:hover {
-  background-color: #d23b3b; /* Darker grey on hover */
-}
-
-/* Ensuring sidebar remains fixed and static */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  z-index: 1000; /* Keeps it on top */
-  transition: background-color 0.3s ease;
-  display: flex;
-  flex-direction: column;
+  background-color: #d23b3b;
 }
