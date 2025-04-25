@@ -25,15 +25,10 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/admin/dashboard.js"
     ],
-    "/admin/login": [
+    "/admin/reservations": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/admin/login.js"
-    ],
-    "/auth/signin": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/auth/signin.js"
+      "static/chunks/pages/admin/reservations.js"
     ]
   },
   "ampFirstPages": []
