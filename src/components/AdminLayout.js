@@ -1,7 +1,6 @@
-// components/AdminLayout.js
-import Sidebar from './Sidebar'
-import Header from './Header'
-import styles from '../styles/AdminLayout.module.css'
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import styles from "../styles/AdminLayout.module.css";
 
 export default function AdminLayout({ children }) {
   return (
@@ -9,10 +8,8 @@ export default function AdminLayout({ children }) {
       <Sidebar />
       <div className={styles.contentWrapper}>
         <Header userName="John" />
-        <div className={styles.mainContent}>
-          {children}
-        </div>
+        <div className={styles.mainContent}>{children}</div>
       </div>
     </div>
-  )
+  );
 }

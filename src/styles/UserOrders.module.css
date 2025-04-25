@@ -1,0 +1,35 @@
+.mainContent {
+  background-color: #1f1f23;
+  padding: 2rem;
+  flex: 1;
+}
+
+.accent {
+  color: #ff5722;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background-color: #26262c;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.statusCompleted {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.loading,
+.empty {
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #ccc;
+}
