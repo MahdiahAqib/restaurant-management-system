@@ -9,6 +9,7 @@ export default function HomePage() {
         </h1>
         <p className="text-gray-300">
           First page that loads when app is run.
+          Make it the user home page (about restaurant info, header etc)
         </p>
       </div>
     </div>

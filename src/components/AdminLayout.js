@@ -1,6 +1,6 @@
 // components/AdminLayout.js
-import Sidebar from './Sidebar'
-import Header from './Header'
+import Sidebar from './AdminSidebar'
+import Header from './AdminHeader'
 import styles from '../styles/AdminLayout.module.css'
 
 export default function AdminLayout({ children }) {

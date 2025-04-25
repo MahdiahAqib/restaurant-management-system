@@ -1,18 +1,29 @@
-// src/pages/admin/login/index.js
-
 import React, { useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../../styles/Login.module.css'
+import { signIn } from 'next-auth/react'
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log({ email, password, rememberMe })
+
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    })
+
+    if (result?.error) {
+      setErrorMessage(result.error) // Set the error message
+    } else if (result?.ok) {
+      window.location.href = '/admin/dashboard'
+    }
   }
 
   return (
@@ -65,6 +76,13 @@ const LoginPage = () => {
                 </div>
                 <button type="submit" className={styles.loginButton}>Login</button>
                 <a href="#" className={styles.forgotPassword}>Forgot password?</a>
+
+                {/* Display error message */}
+                {errorMessage && (
+                  <div className={styles.errorMessage}>
+                    {errorMessage}
+                  </div>
+                )}
               </form>
             </div>
           </div>

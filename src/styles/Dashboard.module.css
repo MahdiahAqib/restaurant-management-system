@@ -1,7 +1,7 @@
 /* styles/Dashboard.module.css */
 
 .content {
-  margin-left: 500px; /* Adjust the left margin to the width of the sidebar */
+  margin-left: 500px;
   padding: 1rem;
 }
 
@@ -14,15 +14,15 @@
 
 .container {
   flex: 1;
-  padding: 4rem 2rem; /* Reduced padding at the top */
-  margin-top: -50px; /* Move the content upwards */
+  padding: 4rem 2rem;
+  margin-top: -50px;
 }
 
 .heading {
   font-size: 2rem;
   font-weight: bold;
   color: #ff5c5c;
-  margin-bottom: 1rem; /* Reduced the space below heading */
+  margin-bottom: 1rem;
 }
 
 .metricsGrid {
@@ -33,12 +33,13 @@
 }
 
 .metricCard {
-  background-color: #1e1e1e;    /* light grey background */
-  color: inherit;               /* keep existing text color or inherit from parent */
-  padding: 1rem;                /* ensure some padding */
-  border-radius: 8px;           /* optional: rounded corners */
-  text-align: center;           /* center-align all text */
+  background-color: #1e1e1e;
+  color: inherit;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
   transition: box-shadow 0.3s ease-in-out;
+  border: 1px solid #2a2a2a;
 }
 
 .metricCard:hover {
@@ -48,48 +49,62 @@
 .metricTitle {
   color: #aaa;
   margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
-.chartBox {
-  display: flex;
-  flex-direction: column; /* stack title and chart */
-  align-items: flex-start; /* title aligns left */
-  justify-content: flex-start;
-  padding: 1rem;
-  background-color: #1e1e1e;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  height: 450px;
+.metricValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff;
 }
 
-
+/* Enhanced chart styles */
 .chartRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem 2rem;
-  margin-bottom: 2rem; /* Adds space between rows */
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
-.chartBox canvas {
-  max-width: 80%; /* Ensures the canvas takes up 100% of the box width */
-  max-height: 95%; /* Ensures the canvas takes up 100% of the box height */
+.chartBox {
+  background: linear-gradient(145deg, #1e1e1e, #252525);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+  position: relative;
+  overflow: hidden;
 }
 
-
-.tableBox {
-  margin-top: 2rem;
+.chartBox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff5c5c, #ff8a8a);
 }
 
-.table {
-  width: 100%;
-  font-size: 0.9rem; /* Adjust the table font size for consistency */
+.chartBox:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(255, 92, 92, 0.2);
 }
 
 .chartTitle {
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-  font-size: 1.1rem;
-  align-self: flex-start; /* ensures it stays left-aligned */
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ff5c5c;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chartContent {
@@ -98,33 +113,144 @@
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.chartGrid:not(:last-of-type) {
-  margin-bottom: 2rem;
-}
-
-
-.table th, .table td {
   padding: 0.5rem;
-  text-align: left;
-  border-bottom: 1px solid #444;
 }
 
+/* Chart.js specific styles */
+.chartBox canvas {
+  max-height: 280px;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.doughnutChart {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.lineChart, .barChart {
+  width: 100% !important;
+  height: 280px !important;
+}
+
+/* Time frame dropdown */
 .timeFrameDropdown {
-  position: absolute;
-  top: 450px;
-  right: 62px;
-  padding: 5px 10px;
-  font-size: 14px;
-  border: 1px solid #ddd; /* Border for better visibility */
-  background-color: #FF6384; /* Example color, change it as per your theme */
-  color: white; /* White text for contrast */
-  border-radius: 5px; /* Rounded corners */
+  padding: 8px 15px;
+  font-size: 0.85rem;
+  border: none;
+  background: rgba(255, 92, 92, 0.2);
+  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Smooth transition on hover */
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 92, 92, 0.3);
+  font-weight: 500;
+  margin-left: 10px;
 }
 
 .timeFrameDropdown:hover {
-  background-color: #D85B6D; /* Slightly darker shade for hover effect */
+  background: rgba(255, 92, 92, 0.3);
+}
+
+.timeFrameDropdown:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 92, 92, 0.4);
+}
+
+/* Table styles */
+.tableBox {
+  margin-top: 3rem;
+  background: linear-gradient(145deg, #1e1e1e, #252525);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table thead {
+  background-color: #ff5c5c;
+  color: white;
+}
+
+.table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+  transition: background-color 0.2s ease;
+  color: #ddd;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background-color: rgba(255, 92, 92, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes chartFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.chartBox, .tableBox {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.chartBox canvas {
+  animation: chartFadeIn 0.6s ease-out forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .chartRow {
+    grid-template-columns: 1fr;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    margin-left: 0;
+    padding: 1rem 0.5rem;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chartTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .timeFrameDropdown {
+    margin-left: 0;
+    align-self: flex-start;
+  }
 }
