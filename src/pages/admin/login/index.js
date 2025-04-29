@@ -1,30 +1,30 @@
-import React, { useState } from 'react'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../../../styles/Login.module.css'
-import { signIn } from 'next-auth/react'
+import React, { useState } from "react";
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../../../styles/Login.module.css";
+import { signIn } from "next-auth/react";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const result = await signIn('credentials', {
+    const result = await signIn("credentials", {
       redirect: false,
       email,
       password,
-    })
+    });
 
     if (result?.error) {
-      setErrorMessage(result.error) // Set the error message
+      setErrorMessage(result.error); // Set the error message
     } else if (result?.ok) {
-      window.location.href = '/admin/dashboard'
+      window.location.href = "/admin/dashboard";
     }
-  }
+  };
 
   return (
     <>
@@ -43,7 +43,9 @@ const LoginPage = () => {
               <form onSubmit={handleSubmit} className={styles.loginForm}>
                 <h2 className={styles.loginTitle}>Sign In</h2>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="email" className={styles.inputLabel}>Email</label>
+                  <label htmlFor="email" className={styles.inputLabel}>
+                    Email
+                  </label>
                   <input
                     type="email"
                     id="email"
@@ -54,7 +56,9 @@ const LoginPage = () => {
                   />
                 </div>
                 <div className={styles.inputGroup}>
-                  <label htmlFor="password" className={styles.inputLabel}>Password</label>
+                  <label htmlFor="password" className={styles.inputLabel}>
+                    Password
+                  </label>
                   <input
                     type="password"
                     id="password"
@@ -72,16 +76,20 @@ const LoginPage = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className={styles.checkbox}
                   />
-                  <label htmlFor="rememberMe" className={styles.rememberLabel}>Remember me</label>
+                  <label htmlFor="rememberMe" className={styles.rememberLabel}>
+                    Remember me
+                  </label>
                 </div>
-                <button type="submit" className={styles.loginButton}>Login</button>
-                <a href="#" className={styles.forgotPassword}>Forgot password?</a>
+                <button type="submit" className={styles.loginButton}>
+                  Login
+                </button>
+                <a href="#" className={styles.forgotPassword}>
+                  Forgot password?
+                </a>
 
                 {/* Display error message */}
                 {errorMessage && (
-                  <div className={styles.errorMessage}>
-                    {errorMessage}
-                  </div>
+                  <div className={styles.errorMessage}>{errorMessage}</div>
                 )}
               </form>
             </div>
@@ -100,7 +108,7 @@ const LoginPage = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

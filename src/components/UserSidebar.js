@@ -12,35 +12,33 @@ export default function UserSidebar() {
         <ul className={styles.navList}>
           <li>
             <Link
-              href="/user"
-              className={router.pathname === "/user" ? styles.active : ""}
+              href="/"
+              className={router.pathname === "/" ? styles.active : ""}
             >
               Home
             </Link>
           </li>
           <li>
             <Link
-              href="/user/menu"
-              className={router.pathname === "/user/menu" ? styles.active : ""}
+              href="/menu"
+              className={router.pathname === "/menu" ? styles.active : ""}
             >
               Menu
             </Link>
           </li>
           <li>
             <Link
-              href="/user/orders"
-              className={
-                router.pathname === "/user/orders" ? styles.active : ""
-              }
+              href="/orders"
+              className={router.pathname === "/orders" ? styles.active : ""}
             >
               My Orders
             </Link>
           </li>
           <li>
             <Link
-              href="/user/reservations"
+              href="/reservations"
               className={
-                router.pathname === "/user/reservations" ? styles.active : ""
+                router.pathname === "/reservations" ? styles.active : ""
               }
             >
               Reservations
@@ -48,10 +46,8 @@ export default function UserSidebar() {
           </li>
           <li>
             <Link
-              href="/user/settings"
-              className={
-                router.pathname === "/user/settings" ? styles.active : ""
-              }
+              href="/settings"
+              className={router.pathname === "/settings" ? styles.active : ""}
             >
               Settings
             </Link>

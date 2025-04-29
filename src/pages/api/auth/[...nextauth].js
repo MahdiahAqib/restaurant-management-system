@@ -1,9 +1,7 @@
-// pages/api/auth/[...nextauth].js
-
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { MongoClient } from 'mongodb';
-import bcrypt from 'bcryptjs';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { MongoClient } from "mongodb";
+import bcrypt from "bcryptjs";
 
 let client;
 
@@ -18,26 +16,31 @@ async function connectToDatabase() {
 export default NextAuth({
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'text' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         const db = await connectToDatabase();
-        const user = await db.collection('admin').findOne({ email: credentials.email });
+        const user = await db
+          .collection("admin")
+          .findOne({ email: credentials.email });
 
-        if (!user) throw new Error('No user found');
+        if (!user) throw new Error("No user found");
 
         // Ensure correct bcrypt comparison (hashed password vs plain password)
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isValid) throw new Error('Invalid password');
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+        if (!isValid) throw new Error("Invalid password");
 
         // Return the user object including name, email, and role
         return {
           id: user._id.toString(),
           email: user.email,
-          name: user.name,  // Assuming 'name' field exists in your admin collection
+          name: user.name, // Assuming 'name' field exists in your admin collection
           role: user.role,
         };
       },
@@ -45,16 +48,16 @@ export default NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/admin/login',
+    signIn: "/admin/login",
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
-        token.name = user.name;  // Save name to the JWT token
+        token.name = user.name; // Save name to the JWT token
       }
       return token;
     },
@@ -63,7 +66,7 @@ export default NextAuth({
         session.user.role = token.role;
       }
       if (token?.name) {
-        session.user.name = token.name;  // Add name to session
+        session.user.name = token.name; // Add name to session
       }
       return session;
     },

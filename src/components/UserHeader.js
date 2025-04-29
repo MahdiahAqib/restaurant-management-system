@@ -5,7 +5,7 @@ export default function UserHeader() {
   const router = useRouter();
 
   const handleLoginClick = () => {
-    router.push("/user/login"); // Redirects to pages/login.js
+    router.push("/login"); // Redirects to pages/login.js
   };
 
   return (

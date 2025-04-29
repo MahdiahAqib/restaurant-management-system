@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import AdminLayout from '../../../components/AdminLayout';
-import styles from '../../../styles/Staff.module.css';
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import AdminLayout from "../../../components/AdminLayout";
+import styles from "../../../styles/Staff.module.css";
 
 function StaffPage() {
   const [staff, setStaff] = useState([]);
@@ -15,9 +15,9 @@ function StaffPage() {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const response = await fetch('/api/staff');
+        const response = await fetch("/api/staff");
         if (!response.ok) {
-          throw new Error('Failed to fetch staff data');
+          throw new Error("Failed to fetch staff data");
         }
         const data = await response.json();
         setStaff(data);
@@ -39,16 +39,16 @@ function StaffPage() {
   const confirmDelete = async () => {
     try {
       const response = await fetch(`/api/staff/${staffToDelete}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete staff member');
+        throw new Error("Failed to delete staff member");
       }
 
       // Update the staff list after successful deletion
-      setStaff(staff.filter(member => member.staff_id !== staffToDelete));
-      setSuccessMessage('Staff member deleted successfully!'); // Set success message
+      setStaff(staff.filter((member) => member.staff_id !== staffToDelete));
+      setSuccessMessage("Staff member deleted successfully!"); // Set success message
       setShowDeleteModal(false);
 
       // Optionally clear the success message after 5 seconds
@@ -117,7 +117,9 @@ function StaffPage() {
                         </button>
                         <button
                           className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                          onClick={() => handleDeleteClick(member.staff_id, member.name)}
+                          onClick={() =>
+                            handleDeleteClick(member.staff_id, member.name)
+                          }
                         >
                           Delete
                         </button>
@@ -134,7 +136,10 @@ function StaffPage() {
             <div className={styles.modalOverlay}>
               <div className={styles.modal}>
                 <h3>Confirm Deletion</h3>
-                <p>Are you sure you want to delete staff member "{staffNameToDelete}"? This action cannot be undone.</p>
+                <p>
+                  Are you sure you want to delete staff member "
+                  {staffNameToDelete}"? This action cannot be undone.
+                </p>
                 <div className={styles.modalActions}>
                   <button
                     className={styles.cancelBtn}
@@ -155,9 +160,7 @@ function StaffPage() {
 
           {/* Success Message */}
           {successMessage && (
-            <div className={styles.successMessage}>
-              {successMessage}
-            </div>
+            <div className={styles.successMessage}>{successMessage}</div>
           )}
 
           <div className={styles.pagination}>
@@ -165,7 +168,7 @@ function StaffPage() {
             {[1, 2, 3, 4].map((n) => (
               <button
                 key={n}
-                className={`${styles.pageBtn} ${n === 1 ? styles.active : ''}`}
+                className={`${styles.pageBtn} ${n === 1 ? styles.active : ""}`}
               >
                 {n}
               </button>
