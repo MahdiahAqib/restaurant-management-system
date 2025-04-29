@@ -3,12 +3,14 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../../../styles/Login.module.css";
 import { signIn } from "next-auth/react";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import icons
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +26,10 @@ const LoginPage = () => {
     } else if (result?.ok) {
       window.location.href = "/admin/dashboard";
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword); // Toggle password visibility
   };
 
   return (
@@ -59,14 +65,23 @@ const LoginPage = () => {
                   <label htmlFor="password" className={styles.inputLabel}>
                     Password
                   </label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={styles.inputField}
-                    required
-                  />
+                  <div className={styles.passwordWrapper}>
+                    <input
+                      type={showPassword ? "text" : "password"} // Toggle between text and password
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={styles.inputField}
+                      required
+                    />
+                    {/* Eye icon to toggle password visibility */}
+                    <span
+                      onClick={togglePasswordVisibility}
+                      className={styles.eyeIcon}
+                    >
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </span>
+                  </div>
                 </div>
                 <div className={styles.rememberMe}>
                   <input

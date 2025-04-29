@@ -194,4 +194,19 @@
       display: none;
     }
   }
+
+  .passwordWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .eyeIcon {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #0070f3;
+    font-size: 18px;
+  }
+  
   

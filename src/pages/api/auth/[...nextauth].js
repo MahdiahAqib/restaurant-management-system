@@ -41,7 +41,7 @@ export default NextAuth({
           id: user._id.toString(),
           email: user.email,
           name: user.name, // Assuming 'name' field exists in your admin collection
-          role: user.role,
+          role: user.Role,
         };
       },
     }),
