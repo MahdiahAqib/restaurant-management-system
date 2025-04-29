@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     user = await User.create({ email, name, role: defaultRole});
   }
 
-  console.log(user)
+  //console.log(user)
 
   // Return success response
   res.status(200).json({ success: true, user: user, });

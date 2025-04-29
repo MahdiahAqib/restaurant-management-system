@@ -40,7 +40,7 @@ export default NextAuth({
         return {
           id: user._id.toString(),
           email: user.email,
-          name: user.name, // Assuming 'name' field exists in your admin collection
+          name: user.name,
           role: user.Role,
         };
       },

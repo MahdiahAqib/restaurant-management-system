@@ -79,7 +79,8 @@ export default function Login() {
     if (data.success) {
       // Store session info in cookies
       Cookies.set("user", JSON.stringify({
-        email: data.user.email,  // Should now be available
+        id: data.user._id, 
+        email: data.user.email,
         name: data.user.name,
         role: data.user.role,
       }), { expires: 7 }); // Cookie expires in 7 days
