@@ -1,4 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+
+const UserSchema = new mongoose.Schema({
+  email: { type: String, unique: true, required: true },
+  name: { type: String },
+});
+
+export default mongoose.models.User || mongoose.model("User", UserSchema);
+
+
+
+/*import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userSchema = new mongoose.Schema({
@@ -35,4 +46,4 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-export default mongoose.models.User || mongoose.model('User', userSchema); 
+export default mongoose.models.User || mongoose.model('User', userSchema); */
