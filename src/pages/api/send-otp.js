@@ -1,33 +1,47 @@
-import { connectDB } from '../../lib/db';
+// /pages/api/send-otp.js
+import nodemailer from "nodemailer";
+import { connectDB } from "../../lib/db";
 import Otp from "../../models/Otp";
-import User from "../../models/User";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default async function handler(req, res) {
-  // Establish the DB connection with 'const db = await connectDB();'
-  const db = await connectDB(); 
+  if (req.method !== "POST") return res.status(405).end();
 
   const { email } = req.body;
+
+  await connectDB();
+
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Save OTP to DB (overwrite previous)
-  await Otp.findOneAndUpdate({ email }, { otp, createdAt: new Date() }, { upsert: true });
+  // Save OTP to database
+  await Otp.findOneAndUpdate(
+    { email },
+    { email, otp },
+    { upsert: true, new: true }
+  );
 
-  const user = await User.findOne({ email });
+  // Check if user already exists
+  const isNewUser = !(await import("../../models/User").then(mod => mod.default.findOne({ email })));
+
+  // Send OTP using nodemailer
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
+    },
+  });
 
   try {
-    // Send OTP email using Resend API
-    await resend.emails.send({
-      from: 'onboarding@resend.dev',
+    await transporter.sendMail({
+      from: process.env.GMAIL_USER,
       to: email,
       subject: "Your OTP Code",
-      html: `<p>Your OTP is <strong>${otp}</strong>. It will expire in 5 minutes.</p>`,
+      text: `Your OTP is: ${otp}`,
     });
 
-    res.status(200).json({ success: true, newUser: !user });
+    res.status(200).json({ success: true, newUser: isNewUser });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    console.error("Email error:", err.message);
+    res.status(500).json({ success: false, message: "Failed to send OTP" });
   }
 }

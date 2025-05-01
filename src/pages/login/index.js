@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "../../styles/UserLogin.module.css";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie"; // To read cookies
+import Cookies from "js-cookie";
 
 export default function Login() {
   const router = useRouter();
@@ -11,19 +11,14 @@ export default function Login() {
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
-  const [timer, setTimer] = useState(300); // 5 minutes in seconds
+  const [timer, setTimer] = useState(60);
+  const [error, setError] = useState(""); 
 
   useEffect(() => {
-    // Check if the user is already logged in
-    const userCookie = Cookies.get("user"); // Check if there's a user cookie
+    const userCookie = Cookies.get("user");
     if (userCookie) {
       const user = JSON.parse(userCookie);
-      // Redirect based on role
-      if (user.role === "admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/home");
-      }
+      router.push("/home");
     }
 
     let countdown;
@@ -48,6 +43,7 @@ export default function Login() {
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+    setError(""); // Clear any previous errors
 
     const res = await fetch("/api/send-otp", {
       method: "POST",
@@ -59,7 +55,7 @@ export default function Login() {
     if (data.success) {
       setIsNewUser(data.newUser);
       setStep(2);
-      setTimer(300); // reset timer to 5 minutes
+      setTimer(60);
     } else {
       alert(data.message);
     }
@@ -67,38 +63,34 @@ export default function Login() {
 
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
-  
+    setError(""); // Clear any previous errors
+
     const res = await fetch("/api/verify-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, otp, name }),
     });
-  
+
     const data = await res.json();
-  
+
     if (data.success) {
-      // Store session info in cookies
       Cookies.set("user", JSON.stringify({
         id: data.user._id, 
         email: data.user.email,
         name: data.user.name,
         role: data.user.role,
-      }), { expires: 7 }); // Cookie expires in 7 days
-  
-      // Redirect based on role
+      }), { expires: 7 });
+
       if (data.user.role === "admin") {
         router.push("/admin/dashboard");
       } else {
-        console.log("Cookie name: ", Cookies.name)
         router.push("/home");
       }
     } else {
-        // Clear cookie just in case
-        Cookies.remove("user");
-        //alert(data.message || "User not found or login failed.");
+      setError("Invalid OTP!"); // Set error message for invalid OTP
+      Cookies.remove("user");
     }
   };
-  
 
   return (
     <div className={styles.loginContainer}>
@@ -139,6 +131,7 @@ export default function Login() {
               onChange={(e) => setName(e.target.value)}
             />
           )}
+          {error && <p className={styles.errorMessage}>{error}</p>} {/* Error message display */}
           <button type="submit">Verify & Login</button>
         </form>
       )}
