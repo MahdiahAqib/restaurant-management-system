@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import styles from '../../../styles/Dashboard.module.css';
 import AdminLayout from '../../../components/AdminLayout';
+
 
 import {
   Chart as ChartJS,
@@ -33,9 +34,41 @@ ChartJS.register(
   Legend
 );
 
+
 const Dashboard = () => {
+  const [staffCount, setStaffCount] = useState(6); // Default to 6 while loading
+  const [userCount, setUserCount] = useState(6); // Default to 6 while loading
   const totalRevenue = 8400;
   const [timeFrame, setTimeFrame] = useState('week');
+
+  useEffect(() => {
+    const fetchStaffCount = async () => {
+      try {
+        const response = await fetch('/api/staff/count');
+        const data = await response.json();
+        if (data.count !== undefined) {
+          setStaffCount(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch staff count:", error);
+      }
+    };
+
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch('/api/user/count');
+        const data = await response.json();
+        if (data.count !== undefined) {
+          setUserCount(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user count:", error);
+      }
+    };
+  
+    fetchStaffCount();
+    fetchUserCount();
+  }, []);
 
   // Chart data configurations
   const orderStatusData = {
@@ -225,12 +258,12 @@ const Dashboard = () => {
             <h2 className={styles.metricValue}>${totalRevenue}</h2>
           </div>
           <div className={styles.metricCard}>
-            <span className={styles.metricTitle}>Staff On Duty</span>
-            <h2 className={styles.metricValue}>6</h2>
+            <span className={styles.metricTitle}>Total Staff</span>
+            <h2 className={styles.metricValue}>{staffCount}</h2>
           </div>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Total Customers</span>
-            <h2 className={styles.metricValue}>1,000</h2>
+            <h2 className={styles.metricValue}>{userCount}</h2>
           </div>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Total Menu Items</span>
