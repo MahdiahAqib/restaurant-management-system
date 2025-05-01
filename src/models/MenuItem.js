@@ -8,5 +8,6 @@ const menuSchema = new mongoose.Schema({
   category: String,
 });
 
-export default mongoose.model.MenuItem ||
-  mongoose.model("MenuItem", menuSchema);
+const MenuItem = mongoose.models.MenuItem || mongoose.model("MenuItem", menuSchema);
+
+export default MenuItem;
