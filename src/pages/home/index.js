@@ -1,10 +1,10 @@
-// pages/user/index.js
 import UserLayout from "../../components/UserLayout";
+import HomePageContent from "../../components/HomePageContent";
 
 export default function UserHomePage() {
   return (
     <UserLayout>
-      <h1>User is logged in now.</h1>
+      <HomePageContent showHeader={false} requireLogin={false} />
     </UserLayout>
   );
 }
