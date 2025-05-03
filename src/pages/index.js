@@ -1,8 +1,22 @@
 // pages/user/index.js
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie"; // Make sure js-cookie is installed
 import UserHeader from "../components/UserHeader";
 import UserLayout from "../components/UserLayout";
 
 export default function RestaurantHomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check if the 'user' cookie exists
+    const userCookie = Cookies.get("user");
+    if (userCookie) {
+      // Log out the user by clearing the 'user' cookie
+      Cookies.remove("user");
+    }
+  }, [router]); // Dependency array to trigger the effect on component mount
+
   return (
     <>
       {/* UserHeader stays on top */}

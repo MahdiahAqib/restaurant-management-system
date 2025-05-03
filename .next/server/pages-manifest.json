@@ -2,14 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/": "pages/index.js",
-  "/admin/login": "pages/admin/login.js",
-  "/api/staff/count": "pages/api/staff/count.js",
   "/admin/dashboard": "pages/admin/dashboard.js",
-  "/api/user/count": "pages/api/user/count.js",
-  "/admin/reservations": "pages/admin/reservations.js",
-  "/api/reservations": "pages/api/reservations.js",
-  "/admin/staff": "pages/admin/staff.js",
-  "/api/staff": "pages/api/staff.js"
+  "/admin/login": "pages/admin/login.js",
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js"
 }

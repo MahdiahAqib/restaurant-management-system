@@ -254,3 +254,10 @@
     align-self: flex-start;
   }
 }
+
+/* styles.module.css */
+.dateRangeDisplay {
+  color: #c13c3c;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}

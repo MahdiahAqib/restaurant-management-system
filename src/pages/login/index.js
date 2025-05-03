@@ -9,10 +9,11 @@ export default function Login() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [name, setName] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
   const [timer, setTimer] = useState(60);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
@@ -41,9 +42,28 @@ export default function Login() {
     return `${m}:${s}`;
   };
 
+  const handleOtpChange = (index, value) => {
+    if (value === '' || /^[0-9]$/.test(value)) {
+      const newOtpDigits = [...otpDigits];
+      newOtpDigits[index] = value;
+      setOtpDigits(newOtpDigits);
+      setOtp(newOtpDigits.join(''));
+      
+      if (value && index < 5) {
+        document.getElementById(`otp-input-${index + 1}`).focus();
+      }
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      document.getElementById(`otp-input-${index - 1}`).focus();
+    }
+  };
+
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError("");
 
     const res = await fetch("/api/send-otp", {
       method: "POST",
@@ -56,6 +76,7 @@ export default function Login() {
       setIsNewUser(data.newUser);
       setStep(2);
       setTimer(60);
+      setOtpDigits(['', '', '', '', '', '']); // Reset OTP boxes
     } else {
       alert(data.message);
     }
@@ -63,7 +84,7 @@ export default function Login() {
 
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    setError("");
 
     const res = await fetch("/api/verify-otp", {
       method: "POST",
@@ -87,7 +108,7 @@ export default function Login() {
         router.push("/home");
       }
     } else {
-      setError("Invalid OTP!"); // Set error message for invalid OTP
+      setError("Invalid OTP!");
       Cookies.remove("user");
     }
   };
@@ -113,14 +134,23 @@ export default function Login() {
         <form className={styles.loginForm} onSubmit={handleOtpSubmit}>
           <h2>Enter OTP</h2>
           <p>OTP expires in: <strong>{formatTime(timer)}</strong></p>
-          <input
-            name="otp"
-            type="text"
-            placeholder="Enter OTP"
-            required
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-          />
+          
+          <div className={styles.otpContainer}>
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+              <input
+                key={index}
+                id={`otp-input-${index}`}
+                type="text"
+                maxLength={1}
+                value={otpDigits[index]}
+                onChange={(e) => handleOtpChange(index, e.target.value)}
+                onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                className={styles.otpInput}
+                autoFocus={index === 0}
+              />
+            ))}
+          </div>
+
           {isNewUser && (
             <input
               name="name"
@@ -131,7 +161,7 @@ export default function Login() {
               onChange={(e) => setName(e.target.value)}
             />
           )}
-          {error && <p className={styles.errorMessage}>{error}</p>} {/* Error message display */}
+          {error && <p className={styles.errorMessage}>{error}</p>}
           <button type="submit">Verify & Login</button>
         </form>
       )}

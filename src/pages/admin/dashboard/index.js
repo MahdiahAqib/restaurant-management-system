@@ -4,7 +4,6 @@ import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import styles from '../../../styles/Dashboard.module.css';
 import AdminLayout from '../../../components/AdminLayout';
 
-
 import {
   Chart as ChartJS,
   LineElement,
@@ -34,43 +33,147 @@ ChartJS.register(
   Legend
 );
 
-
 const Dashboard = () => {
-  const [staffCount, setStaffCount] = useState(6); // Default to 6 while loading
-  const [userCount, setUserCount] = useState(6); // Default to 6 while loading
-  const totalRevenue = 8400;
-  const [timeFrame, setTimeFrame] = useState('week');
+  // State management
+  const [staffCount, setStaffCount] = useState(0);
+  const [userCount, setUserCount] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [timeFrameRevenueTrend, setTimeFrameRevenueTrend] = useState('Today');
+  const [timeFrameSaleCategory, setTimeFrameSaleCategory] = useState('week');
+  const [categoryBarData, setCategoryBarData] = useState({
+    labels: [],
+    datasets: []
+  });
+  const [RevenueTrendData, setRevenueTrendData] = useState({
+    labels: [],
+    datasets: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [dateRangeLabel, setDateRangeLabel] = useState('');
 
+  // Fallback data for loading states
+  const fallbackCategoryData = {
+    labels: ['Loading...'],
+    datasets: [{
+      label: 'Loading Data',
+      data: [1],
+      backgroundColor: ['rgba(200, 200, 200, 0.2)'],
+      borderColor: ['rgba(200, 200, 200, 1)'],
+      borderWidth: 1
+    }]
+  };
+
+  // Fetch data from API
   useEffect(() => {
-    const fetchStaffCount = async () => {
+    const fetchDashboardStats = async () => {
+      setIsLoading(true);
       try {
-        const response = await fetch('/api/staff/count');
-        const data = await response.json();
-        if (data.count !== undefined) {
-          setStaffCount(data.count);
+        const response = await fetch(
+          `/api/dashboard?timeframe=${timeFrameSaleCategory}&revenueFrame=${timeFrameRevenueTrend}`
+        );
+        const data = await response.json(); // First get the complete response as 'data'
+        console.log("data:", data)
+        
+        // Then destructure from 'data'
+        const {
+          staffCount = 0,
+          userCount = 0,
+          totalRevenue = 0,
+          categorySales = {},
+          dateRangeLabel = '',
+          unmatchedItems = [],
+          revenueTrend = []
+        } = data;
+  
+        // Update all state in one pass
+        setStaffCount(staffCount);
+        setUserCount(userCount);
+        setTotalRevenue(totalRevenue);
+        setDateRangeLabel(dateRangeLabel);
+  
+        // Transform category sales data for chart
+        const chartData = {
+          labels: Object.keys(categorySales),
+          datasets: [{
+            label: `Sales (${timeFrameSaleCategory})`,
+            data: Object.values(categorySales),
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.7)',
+              'rgba(54, 162, 235, 0.7)',
+              'rgba(255, 206, 86, 0.7)',
+              'rgba(170, 102, 204, 0.7)',
+              'rgba(75, 192, 192, 0.7)'
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(170, 102, 204, 1)',
+              'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1,
+            borderRadius: 6
+          }]
+        };
+  
+        setCategoryBarData(chartData);
+        
+        // Generate labels dynamically based on selected revenue frame
+        let trendLabels = [];
+        
+        if (timeFrameRevenueTrend === 'Today') {
+          trendLabels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
+        } else if (timeFrameRevenueTrend === 'This week') {
+          trendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        } else if (timeFrameRevenueTrend === 'This month') {
+          trendLabels = revenueTrend.map((_, i) => `Week ${i + 1}`);
+        } else if (timeFrameRevenueTrend === 'This year') {
+          trendLabels = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+          ];
+        } else if (timeFrameRevenueTrend === 'Yearly') {
+          const currentYear = new Date().getFullYear();
+          trendLabels = revenueTrend.map((_, i) => `${currentYear - 5 + i}`);
         }
-      } catch (error) {
-        console.error("Failed to fetch staff count:", error);
-      }
-    };
+        
+        // Revenue Trend Line Chart
+        const trendChartData = {
+          labels: trendLabels,
+          datasets: [
+            {
+              label: `Revenue (${timeFrameRevenueTrend})`,
+              data: revenueTrend,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true
+            }
+          ]
+        };
+        
+        console.log("revenueTrendData:", trendChartData);
 
-    const fetchUserCount = async () => {
-      try {
-        const response = await fetch('/api/user/count');
-        const data = await response.json();
-        if (data.count !== undefined) {
-          setUserCount(data.count);
+        setRevenueTrendData(trendChartData);
+  
+        // Now correctly using the destructured unmatchedItems
+        if (unmatchedItems.length) {
+          console.warn('Uncategorized items:', unmatchedItems);
         }
+  
       } catch (error) {
-        console.error("Failed to fetch user count:", error);
+        console.error("Failed to fetch dashboard stats:", error);
+        // Optionally set error state here
+      } finally {
+        setIsLoading(false);
       }
     };
   
-    fetchStaffCount();
-    fetchUserCount();
-  }, []);
+    fetchDashboardStats();
+  }, [timeFrameSaleCategory, timeFrameRevenueTrend]);
 
-  // Chart data configurations
+  // Static chart data configurations
   const orderStatusData = {
     labels: ['Completed', 'Pending', 'Cancelled'],
     datasets: [{
@@ -82,29 +185,6 @@ const Dashboard = () => {
     }]
   };
 
-  const revenueData = {
-    day: [400, 500, 600, 700, 300, 800, 1200],
-    week: [2500, 2800, 3200, 2900, 3300, 3500, 3700],
-    month: [10500, 10800, 11200, 11500, 11300, 12000, 11800],
-  };
-
-  const revenueLineData = {
-    labels: timeFrame === 'day' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] :
-            timeFrame === 'week' ? ['Week 1', 'Week 2', 'Week 3', 'Week 4'] :
-            ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    datasets: [{
-      label: 'Revenue ($)',
-      data: revenueData[timeFrame],
-      borderColor: '#FF6384',
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      tension: 0.3,
-      fill: true,
-      pointBackgroundColor: '#fff',
-      pointBorderColor: '#FF6384',
-      pointHoverRadius: 6,
-      borderWidth: 2
-    }]
-  };
 
   const customerTrendData = {
     day: [100, 120, 150, 80, 90, 110, 130],
@@ -113,12 +193,12 @@ const Dashboard = () => {
   };
 
   const customerLineData = {
-    labels: timeFrame === 'day' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] :
-            timeFrame === 'week' ? ['Week 1', 'Week 2', 'Week 3', 'Week 4'] :
+    labels: timeFrameRevenueTrend === 'day' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] :
+            timeFrameRevenueTrend === 'week' ? ['Week 1', 'Week 2', 'Week 3', 'Week 4'] :
             ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
     datasets: [{
       label: 'Visitors',
-      data: customerTrendData[timeFrame],
+      data: customerTrendData[timeFrameRevenueTrend],
       borderColor: '#4BC0C0',
       backgroundColor: 'rgba(75, 192, 192, 0.2)',
       tension: 0.3,
@@ -127,28 +207,6 @@ const Dashboard = () => {
       pointBorderColor: '#4BC0C0',
       pointHoverRadius: 6,
       borderWidth: 2
-    }]
-  };
-
-  const categoryBarData = {
-    labels: ['Burgers', 'Pizzas', 'Drinks', 'Desserts'],
-    datasets: [{
-      label: 'Sales ($)',
-      data: [300, 500, 200, 100],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.7)',
-        'rgba(54, 162, 235, 0.7)',
-        'rgba(255, 206, 86, 0.7)',
-        'rgba(170, 102, 204, 0.7)'
-      ],
-      borderColor: [
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(170, 102, 204, 1)'
-      ],
-      borderWidth: 1,
-      borderRadius: 6
     }]
   };
 
@@ -243,6 +301,7 @@ const Dashboard = () => {
       <div className={styles.container}>
         <h1 className={styles.heading}>Dashboard</h1>
 
+
         {/* Top metrics */}
         <div className={styles.metricsGrid}>
           <div className={styles.metricCard}>
@@ -282,18 +341,21 @@ const Dashboard = () => {
           <div className={styles.chartBox}>
             <div className={styles.chartTitle}>
               Revenue Trend
-              <select 
-                className={styles.timeFrameDropdown} 
-                value={timeFrame} 
-                onChange={(e) => setTimeFrame(e.target.value)}
-              >
-                <option value="day">Day</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-              </select>
+              <select
+            className={styles.timeFrameDropdown}
+            value={timeFrameRevenueTrend}
+            onChange={(e) => setTimeFrameRevenueTrend(e.target.value)}
+          >
+            <option value="Today">Today</option>
+            <option value="This week">This Week</option>
+            <option value="This month">This Month</option>
+            <option value="This year">This Year</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+
             </div>
             <div className={`${styles.chartContent} ${styles.lineChart}`}>
-              <Line data={revenueLineData} options={chartOptions} />
+              <Line data={RevenueTrendData} options={chartOptions} />
             </div>
           </div>
         </div>
@@ -301,9 +363,30 @@ const Dashboard = () => {
         {/* Second row of charts */}
         <div className={styles.chartRow}>
           <div className={styles.chartBox}>
-            <div className={styles.chartTitle}>Sales by Category</div>
+            <div className={styles.chartTitle}>
+              Sales by Category
+              <select 
+                className={styles.timeFrameDropdown} 
+                value={timeFrameSaleCategory} 
+                onChange={(e) => setTimeFrameSaleCategory(e.target.value)}
+              >
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+              </select>
+            </div>
+            {/* Date range display */}
+            {dateRangeLabel && (
+              <div className={styles.dateRangeDisplay}>
+                Showing data for: {dateRangeLabel}
+              </div>
+            )}
             <div className={`${styles.chartContent} ${styles.barChart}`}>
-              <Bar data={categoryBarData} options={chartOptions} />
+              {isLoading ? (
+                <Bar data={fallbackCategoryData} options={chartOptions} />
+              ) : (
+                <Bar data={categoryBarData} options={chartOptions} />
+              )}
             </div>
           </div>
           <div className={styles.chartBox}>

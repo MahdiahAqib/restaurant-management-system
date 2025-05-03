@@ -13,6 +13,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "chart.js": "^4.4.9",
+    "date-fns": "^4.1.0",
     "framer-motion": "^11.3.19",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.417.0",
