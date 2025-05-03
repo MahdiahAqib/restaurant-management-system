@@ -2,7 +2,15 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
-  "/login": "pages/login.js",
-  "/admin/login": "pages/admin/login.js"
+  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
+  "/home": "pages/home.js",
+  "/orders": "pages/orders.js",
+  "/reservations": "pages/reservations.js",
+  "/api/orders": "pages/api/orders.js",
+  "/admin/login": "pages/admin/login.js",
+  "/admin/dashboard": "pages/admin/dashboard.js",
+  "/api/staff/count": "pages/api/staff/count.js",
+  "/api/user/count": "pages/api/user/count.js",
+  "/api/reservations": "pages/api/reservations.js",
+  "/admin/reservations": "pages/admin/reservations.js"
 }
