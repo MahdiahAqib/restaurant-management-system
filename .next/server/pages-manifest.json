@@ -2,15 +2,13 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
-  "/admin/login": "pages/admin/login.js",
-  "/admin/dashboard": "pages/admin/dashboard.js",
+  "/login": "pages/login.js",
   "/api/menu": "pages/api/menu.js",
-  "/menu": "pages/menu.js",
+  "/api/verify-otp": "pages/api/verify-otp.js",
   "/home": "pages/home.js",
-  "/": "pages/index.js",
-  "/reservations": "pages/reservations.js",
+  "/menu": "pages/menu.js",
   "/orders": "pages/orders.js",
   "/api/orders": "pages/api/orders.js",
-  "/api/dashboard": "pages/api/dashboard.js"
+  "/reservations": "pages/reservations.js",
+  "/": "pages/index.js"
 }
