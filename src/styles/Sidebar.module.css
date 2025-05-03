@@ -1,59 +1,68 @@
-/* Sidebar.module.css */
 .sidebar {
-  width: 220px;          /* Sidebar width */
-  height: 100vh;         /* Full height */
-  background-color: #3a3a3a;
-  padding: 1.5rem 1rem;
-  position: fixed;       /* Fixed position to stay on the left */
-  top: 0;
-  left: 0;
-  color: #f0f0f0;
-  transition: background-color 0.3s ease;
-  z-index: 1000;         /* Keeps sidebar on top */
-  display: flex;
-  flex-direction: column;
-  box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2); /* Optional: adds shadow to sidebar */
+  width: 240px;
+  padding: 1rem 0;
 }
-
-.logo {
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  color: #ff5c5c;
-  transition: color 0.3s ease;
-  margin-top: -23px;       /* Moves the logo upward */
-  height: 60px;            /* Matches header height */
-  display: flex;
-  align-items: center;     /* Vertically center the text */
-  border-bottom: 1.5px solid white;  /* White line with slight transparency */
-  padding-bottom: 0.5rem;  /* Adds space between text and line */
-  width: 100%;
-}
-
 
 .navList {
   list-style: none;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  margin: 0;
 }
 
-.navList li a {
+.navList li {
+  margin-bottom: 0.25rem;
+}
+
+.navLink {
   text-decoration: none;
-  color: #ccc;
-  font-size: 1rem;
-  transition: color 0.3s ease, background-color 0.3s ease;
-  padding: 10px 15px;
-  border-radius: 5px;
-  display: block;
+  color: #a1a1aa;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.925rem;
+  margin: 0 0.5rem;
 }
 
-.navList li a:hover {
-  color: #fff;
-  background-color: #ff5c5c;
+.navLink:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
-.sidebar:hover {
-  background-color: #d23b3b;
+.active {
+  background-color: rgba(255, 87, 34, 0.1) !important;
+  color: #ff5722 !important;
+  font-weight: 500;
+  position: relative;
+}
+
+.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #ff5722;
+  border-radius: 0 3px 3px 0;
+}
+
+.navIcon {
+  font-size: 1.25rem;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+
+.navText {
+  letter-spacing: 0.025em;
+}
+
+/* Active state enhances icon too */
+.active .navIcon {
+  opacity: 1;
 }

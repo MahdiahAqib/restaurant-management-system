@@ -1,16 +1,44 @@
 .layout {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: #1f1f23;
 }
 
+/* Sidebar positioned below header */
+.sidebar {
+  width: 220px;
+  background-color: #18181b;
+  border-right: 1px solid #2f2f35;
+  position: fixed;
+  top: 60px; /* Header height */
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 5;
+  padding: 1rem 0;
+}
+
+/* Content area adjusted */
 .contentWrapper {
   flex: 1;
+  margin-left: 220px; /* Match sidebar width */
   display: flex;
   flex-direction: column;
 }
 
-.mainContent {
+/* Header with fixed height */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background-color: #1f1f23;
+  border-bottom: 1px solid #2f2f35;
+  height: 60px; /* Fixed header height */
+}
+
+/* Main content with proper spacing */
+.mainContent {
   padding: 2rem;
   flex: 1;
+  color: #e2e2e4;
+  margin-top: 60px; /* Prevent content under header */
 }

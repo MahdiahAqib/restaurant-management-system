@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaUtensils, FaCalendarAlt } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import styles from "../styles/UserHeader.module.css";
+import Link from "next/link";
 
-export default function UserHeader() {
+export default function UserHeader({ preLogin = false }) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [user, setUser] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
 
-  // UseEffect to retrieve user data from cookies
   useEffect(() => {
+    // Don't check for user if this is pre-login header
+    if (preLogin) return;
+
     const userCookie = Cookies.get("user");
     if (userCookie) {
       try {
@@ -21,7 +25,17 @@ export default function UserHeader() {
         console.error("Failed to parse user cookie", err);
       }
     }
-  }, []);
+
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [scrolled, preLogin]);
 
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
@@ -29,10 +43,12 @@ export default function UserHeader() {
 
   const handleLogout = () => {
     Cookies.remove("user");
+    setDropdownVisible(false);
     router.push("/");
   };
 
   const handleEditProfile = () => {
+    setDropdownVisible(false);
     router.push("/user/edit-profile");
   };
 
@@ -41,34 +57,58 @@ export default function UserHeader() {
   };
 
   return (
-    <div className={styles.header}>
-      <div className={styles.rightSection}>
-        {user ? (
-          // Display User Info and Dropdown if user is logged in
+    <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
+      <div className={styles.logo}>
+        <Link href="/">
+          <span className={styles.logoText}>FAST</span>
+          <span className={styles.logoHighlight}>Food</span>
+        </Link>
+      </div>
+
+      <nav className={styles.nav}>
+        <Link href="/menu" className={styles.navLink}>
+          <FaUtensils className={styles.navIcon} />
+          <span>Menu</span>
+        </Link>
+        <Link href="/reservations" className={styles.navLink}>
+          <FaCalendarAlt className={styles.navIcon} />
+          <span>Reserve Table</span>
+        </Link>
+      </nav>
+
+      <div className={styles.userSection}>
+        {preLogin ? (
+          <button onClick={handleLoginClick} className={styles.loginButton}>
+            <FaUserCircle className={styles.loginIcon} />
+            <span>Sign In</span>
+          </button>
+        ) : user ? (
           <div className={styles.userMenu} onClick={toggleDropdown}>
-            <FaUserCircle className={styles.icon} />
-            <span className={styles.greeting}>Hello, {user.name}</span>
+            <div className={styles.userAvatar}>
+              <FaUserCircle className={styles.avatarIcon} />
+            </div>
+            <span className={styles.userName}>{user.name}</span>
             <IoIosArrowDown
-              className={`${styles.arrow} ${dropdownVisible ? styles.arrowOpen : ""}`}
+              className={`${styles.dropdownArrow} ${dropdownVisible ? styles.arrowOpen : ''}`}
             />
             {dropdownVisible && (
-              <div className={styles.dropdown}>
+              <div className={styles.dropdownMenu}>
                 <button className={styles.dropdownItem} onClick={handleEditProfile}>
-                  View Profile
+                  My Profile
                 </button>
                 <button className={styles.dropdownItem} onClick={handleLogout}>
-                  Logout
+                  Sign Out
                 </button>
               </div>
             )}
           </div>
         ) : (
-          // Display Login Button if user is not logged in
-          <button onClick={handleLoginClick} className={styles.signInBtn}>
-            Log In
+          <button onClick={handleLoginClick} className={styles.loginButton}>
+            <FaUserCircle className={styles.loginIcon} />
+            <span>Sign In</span>
           </button>
         )}
       </div>
-    </div>
+    </header>
   );
 }

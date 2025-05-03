@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'; // Add this import
 import Cookies from 'js-cookie';
-import GuestMenuPage from '../../components//GuestMenuPage';
+import GuestMenuPage from '../../components/GuestMenuPage';
 import UserMenuPage from '../../components//UserMenuPage';
 import UserLayout from '../../components/UserLayout';
 

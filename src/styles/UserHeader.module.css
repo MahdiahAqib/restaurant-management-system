@@ -1,96 +1,213 @@
+/* styles/UserHeader.module.css */
+
 .header {
-  background-color: #1a1a1d;
-  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #2b2b2e;
-  position: relative; /* Ensure dropdown aligns correctly */
+  padding: 1rem 5%;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255, 0, 0, 0.1);
 }
 
-.rightSection {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  position: relative; /* Needed to anchor the dropdown */
+.header.scrolled {
+  padding: 0.5rem 5%;
+  background-color: rgba(0, 0, 0, 0.95);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
-.signInBtn {
-  background-color: #ff5722;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.signInBtn:hover {
-  background-color: #e64a19;
-}
-
-.icon {
+.logo {
   font-size: 1.8rem;
-  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
   cursor: pointer;
+}
+
+.logoText {
+  color: #fff;
+}
+
+.logoHighlight {
+  color: #ff0000;
+}
+
+.nav {
+  display: flex;
+  gap: 2rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.navLink:hover {
+  color: #fff;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.navIcon {
+  font-size: 1.1rem;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
 }
 
 .userMenu {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* space between icon, text, and arrow */
+  gap: 0.7rem;
   cursor: pointer;
   position: relative;
-  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  transition: all 0.3s ease;
 }
 
+.userMenu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
 
-.greeting {
-  font-size: 1rem;
+.userAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarIcon {
+  font-size: 1.8rem;
+  color: #ff0000;
+}
+
+.userName {
   font-weight: 500;
   color: #fff;
-  cursor: pointer;
 }
 
-/* Arrow Icon Styling */
-.arrow {
-  font-size: 0.8rem;
+.dropdownArrow {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.7);
   transition: transform 0.3s ease;
-  margin-left: 4px;
-  color: #fff;
 }
 
 .arrowOpen {
   transform: rotate(180deg);
 }
 
-/* Dropdown */
-.dropdown {
+.dropdownMenu {
   position: absolute;
-  top: 120%; /* Below user menu */
+  top: 100%;
   right: 0;
-  background-color: #333;
-  border: 1px solid #555;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  border-radius: 6px;
-  width: 160px;
-  z-index: 999;
-  padding: 6px 0;
+  background-color: #111;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  min-width: 180px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1001;
+  margin-top: 0.5rem;
+  animation: fadeIn 0.2s ease-out;
 }
 
 .dropdownItem {
-  padding: 10px 16px;
   width: 100%;
-  background: none;
-  border: none;
+  padding: 0.7rem 1.5rem;
   text-align: left;
-  font-size: 0.9rem;
-  color: white;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .dropdownItem:hover {
-  background-color: #8a7777;
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #fff;
+}
+
+.loginButton {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.loginButton:hover {
+  background-color: rgba(255, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.loginIcon {
+  font-size: 1.2rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .nav {
+    gap: 1rem;
+  }
+
+  .navLink span {
+    display: none;
+  }
+
+  .userName {
+    display: none;
+  }
+
+  .loginButton span {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1.5rem;
+  }
+
+  .nav {
+    gap: 0.5rem;
+  }
+
+  .navLink {
+    padding: 0.5rem;
+  }
 }
