@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../styles/Usermenu.module.css';
 import Cookies from 'js-cookie';
 
@@ -8,10 +9,13 @@ const UserMenuPage = ({
     activeCategory, 
     setActiveCategory 
 }) => {
+    const router = useRouter();
     const [cart, setCart] = useState([]);
     const [isCheckout, setIsCheckout] = useState(false);
     const [notification, setNotification] = useState(null);
-    const [userData, setUserData] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         address: '',
         phone: '',
@@ -20,16 +24,33 @@ const UserMenuPage = ({
 
     // Load user data from cookies
     useEffect(() => {
-        const userCookie = Cookies.get('user');
-        if (userCookie) {
-            try {
-                const user = JSON.parse(userCookie);
-                setUserData(user);
-            } catch (e) {
-                console.error('Failed to parse user cookie', e);
+        const loadUser = () => {
+            setIsLoading(true);
+            const userCookie = Cookies.get('user');
+            
+            if (!userCookie) {
+                console.log('No user cookie found - redirecting to login');
+                router.push('/login');
+                return;
             }
-        }
-    }, []);
+
+            try {
+                const parsedUser = JSON.parse(userCookie);
+                if (!parsedUser?.id) {
+                    throw new Error('Invalid user data');
+                }
+                setUser(parsedUser);
+            } catch (e) {
+                console.error('Failed to parse user cookie:', e);
+                Cookies.remove('user');
+                router.push('/login');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadUser();
+    }, [router]);
 
     const showNotification = (message, type) => {
         setNotification({ message, type });
@@ -38,26 +59,15 @@ const UserMenuPage = ({
 
     const addToCart = (item) => {
         setCart(prevCart => {
-            const existingItemIndex = prevCart.findIndex(cartItem => 
-                cartItem._id === item._id
-            );
-    
-            if (existingItemIndex !== -1) {
-                const updatedCart = [...prevCart];
-                updatedCart[existingItemIndex] = {
-                    ...updatedCart[existingItemIndex],
-                    quantity: updatedCart[existingItemIndex].quantity + 1
-                };
-                return updatedCart;
-            } else {
-                return [
-                    ...prevCart,
-                    {
-                        ...item,
-                        quantity: 1
-                    }
-                ];
+            const existingItem = prevCart.find(cartItem => cartItem._id === item._id);
+            if (existingItem) {
+                return prevCart.map(cartItem =>
+                    cartItem._id === item._id
+                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                        : cartItem
+                );
             }
+            return [...prevCart, { ...item, quantity: 1 }];
         });
         showNotification(`${item.name} added to cart`, 'success');
     };
@@ -85,44 +95,63 @@ const UserMenuPage = ({
 
     const handleCheckout = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true);
         
-        try {
-            const orderData = {
-                user: userData._id,
-                items: cart.map(item => ({
-                    menuItem: item._id,
-                    quantity: item.quantity
-                })),
-                total: calculateTotal(),
-                deliveryAddress: formData.address,
-                phone: formData.phone,
-                paymentMethod: formData.payment,
-                customerName: userData.name,
-                customerEmail: userData.email
-            };
-
-            const response = await fetch('/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            if (!response.ok) throw new Error('Order failed');
-
-            showNotification('Order placed successfully!', 'success');
-            setCart([]);
-            setIsCheckout(false);
-            setFormData({
-                address: '',
-                phone: '',
-                payment: 'cash'
-            });
-        } catch (error) {
-            showNotification(error.message || 'Failed to place order', 'error');
+        console.log('🟠 Starting checkout process...');
+        console.log('🛒 Current cart:', cart);
+        console.log('📝 Form data:', formData);
+      
+        if (!user?.id) {
+          console.log('🔴 No user ID found');
+          showNotification('Please login to complete your order', 'error');
+          router.push('/login');
+          return;
         }
-    };
+      
+        try {
+          const orderData = {
+            userId: user.id,
+            items: cart.map(item => ({
+              _id: item._id,
+              itemId: item._id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image
+            })),
+            totalAmount: calculateTotal(),
+            status: "pending",
+            address: formData.address,
+            phone: formData.phone,
+            paymentMethod: formData.payment
+          };
+      
+          console.log('📤 Sending order data:', orderData);
+      
+          const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+          });
+      
+          const data = await response.json();
+          console.log('📥 Server response:', data);
+      
+          if (!response.ok) {
+            throw new Error(data.error || 'Order failed');
+          }
+      
+          showNotification('Order placed successfully!', 'success');
+          setCart([]);
+          setIsCheckout(false);
+          
+        } catch (error) {
+          console.error('🔴 Checkout failed:', error);
+          showNotification(error.message || 'Failed to place order', 'error');
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -135,9 +164,12 @@ const UserMenuPage = ({
 
     const filteredItems = menuItems.filter(item => item.category === activeCategory);
 
+    if (isLoading) {
+        return <div className={styles.loadingContainer}>Loading menu...</div>;
+    }
+
     return (
         <div className={styles.menuPage}>
-            {/* Notification */}
             {notification && (
                 <div className={`${styles.notification} ${
                     notification.type === 'success' ? styles.notificationSuccess : styles.notificationError
@@ -152,7 +184,6 @@ const UserMenuPage = ({
                 </div>
             )}
 
-            {/* Categories */}
             <div className={styles.categories}>
                 <h2 className={styles.categoryTitle}>Categories</h2>
                 {categories.map(category => (
@@ -168,7 +199,6 @@ const UserMenuPage = ({
                 ))}
             </div>
 
-            {/* Menu Items */}
             <div className={styles.menuItems}>
                 {filteredItems.map(item => (
                     <div key={item._id} className={styles.menuItem}>
@@ -190,7 +220,6 @@ const UserMenuPage = ({
                 ))}
             </div>
 
-            {/* Cart & Checkout Panel */}
             <div className={styles.cartCheckoutPanel}>
                 <div className={styles.panelContainer}>
                     {!isCheckout ? (
@@ -262,14 +291,14 @@ const UserMenuPage = ({
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>Full Name</label>
                                         <div className={styles.userInfoDisplay}>
-                                            {userData?.name || 'Loading...'}
+                                            {user?.name || 'Not available'}
                                         </div>
                                     </div>
                                     
                                     <div className={styles.formGroup}>
                                         <label className={styles.formLabel}>Email</label>
                                         <div className={styles.userInfoDisplay}>
-                                            {userData?.email || 'Loading...'}
+                                            {user?.email || 'Not available'}
                                         </div>
                                     </div>
                                     
@@ -282,7 +311,7 @@ const UserMenuPage = ({
                                             onChange={handleInputChange}
                                             className={styles.formInput}
                                             required
-                                            placeholder="Street address, apartment/unit number"
+                                            placeholder="Street address"
                                         />
                                     </div>
                                     
@@ -297,7 +326,6 @@ const UserMenuPage = ({
                                             required
                                             placeholder="Contact phone number"
                                             pattern="[0-9]{10,15}"
-                                            title="Please enter a valid phone number (10-15 digits)"
                                         />
                                     </div>
                                     
@@ -328,9 +356,16 @@ const UserMenuPage = ({
                                     <button 
                                         type="submit"
                                         className={styles.placeOrderButton}
-                                        disabled={cart.length === 0}
+                                        disabled={cart.length === 0 || isSubmitting}
                                     >
-                                        Place Order (${calculateTotal().toFixed(2)})
+                                        {isSubmitting ? (
+                                            <>
+                                                <span className={styles.spinner}></span>
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            `Place Order ($${calculateTotal().toFixed(2)})`
+                                        )}
                                     </button>
                                     <button 
                                         type="button"

@@ -3,36 +3,14 @@
     min-height: 100vh;
     background-color: #000;
     color: #fff;
-    font-family: 'Inter', Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 20px;
 }
 
-/* Header styles */
-.menuHeader {
+/* Layout */
+.flexContainer {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #333;
-}
-
-.menuTitle {
-    font-size: 1.8rem;
-    color: #fff;
-    margin: 0;
-}
-
-.headerButtons {
-    display: flex;
-    gap: 10px;
-}
-
-/* Main layout */
-.menuLayout {
-    display: flex;
-    gap: 25px;
-    align-items: flex-start;
+    gap: 20px;
 }
 
 /* Categories sidebar */
@@ -41,15 +19,7 @@
     background-color: #111;
     padding: 20px;
     border-radius: 10px;
-    position: sticky;
-    top: 20px;
-}
-
-.sidebarHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    position: relative;
 }
 
 .categoryTitle {
@@ -58,92 +28,47 @@
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid #333;
-    font-weight: 600;
-}
-
-.categoryItem {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.categoryItem {
     padding: 12px 15px;
     cursor: pointer;
     border-radius: 6px;
     margin-bottom: 8px;
     transition: all 0.2s ease;
-    font-size: 0.95rem;
-}
-
-.categoryName {
-    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .categoryItem:hover {
     background-color: #222;
-    transform: translateX(3px);
 }
 
 .categoryItemActive {
     background-color: #f00;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(255, 0, 0, 0.3);
 }
 
-.categoryList {
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-
-.addCategoryButton {
-    background: #333;
-    color: white;
-    border: none;
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1rem;
+.categoryActions {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    gap: 8px;
 }
 
-.addCategoryButton:hover {
-    background: #444;
-    transform: scale(1.1);
-}
-
-.deleteCategoryButton {
-    background: transparent;
+.categoryActionBtn {
+    background: none;
+    border: none;
     color: #aaa;
-    border: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
     cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+    font-size: 0.9rem;
+    transition: color 0.2s;
 }
 
-.deleteCategoryButton:hover {
-    color: white;
-    background: #333;
-}
-
-.addCategoryForm {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #222;
-    border-radius: 6px;
-}
-
-.categoryFormButtons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
+.categoryActionBtn:hover {
+    color: #fff;
 }
 
 /* Menu content */
@@ -157,13 +82,15 @@
 .sectionTitle {
     font-size: 1.5rem;
     color: #fff;
-    margin-bottom: 25px;
-    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .menuItemsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
 }
 
@@ -173,13 +100,19 @@
     border-radius: 10px;
     border-left: 4px solid #f00;
     transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
 }
 
 .menuItem:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(255, 0, 0, 0.1);
+}
+
+.itemImage {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
 }
 
 .itemName {
@@ -194,109 +127,81 @@
     font-size: 0.95rem;
     margin-bottom: 15px;
     line-height: 1.4;
-    flex-grow: 1;
+}
+
+.itemFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .itemPrice {
     color: #f00;
     font-weight: bold;
     font-size: 1.1rem;
-    margin-top: 10px;
-}
-
-.itemImage {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    border: 1px solid #333;
-}
-
-.emptyState {
-    color: #aaa;
-    text-align: center;
-    padding: 40px;
-    font-size: 1.1rem;
-    grid-column: 1 / -1;
 }
 
 /* Form styles */
-.formCard {
+.formContainer {
     background-color: #1a1a1a;
     padding: 25px;
     border-radius: 10px;
-    border-left: 4px solid #f00;
     margin-bottom: 20px;
 }
 
-.formCardTitle {
+.formTitle {
     font-size: 1.3rem;
     margin-bottom: 20px;
     color: #fff;
-    font-weight: 600;
 }
 
 .formGroup {
     margin-bottom: 20px;
 }
 
+.formLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: #ddd;
+    font-size: 0.95rem;
+}
+
 .formInput {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px;
     background-color: #222;
     border: 1px solid #333;
     border-radius: 6px;
     color: white;
-    margin-bottom: 10px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: border-color 0.2s;
 }
 
 .formInput:focus {
-    outline: none;
     border-color: #f00;
+    outline: none;
 }
 
 .formTextarea {
     min-height: 100px;
     resize: vertical;
-    line-height: 1.5;
 }
 
-.categorySelectContainer {
-    display: flex;
-    gap: 5px;
+.formSelect {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 15px;
 }
 
-.addCategorySmallButton {
-    background: #333;
-    color: white;
-    border: none;
-    width: 35px;
-    height: 35px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
-
-.addCategorySmallButton:hover {
-    background: #444;
-}
-
-.imageUpload {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-}
-
-.imageUpload label {
-    margin-bottom: 10px;
-    font-weight: 500;
+.imagePreview {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px dashed #444;
 }
 
 /* Buttons */
@@ -307,20 +212,21 @@
 }
 
 .button {
-    padding: 10px 18px;
+    padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
     border: none;
     font-weight: bold;
-    font-size: 0.9rem;
-    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    transition: all 0.2s;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 8px;
 }
 
-.button:hover {
-    transform: translateY(-2px);
+.button svg {
+    width: 16px;
+    height: 16px;
 }
 
 .primaryButton {
@@ -330,7 +236,6 @@
 
 .primaryButton:hover {
     background-color: #d00;
-    box-shadow: 0 3px 8px rgba(255, 0, 0, 0.3);
 }
 
 .secondaryButton {
@@ -340,25 +245,62 @@
 
 .secondaryButton:hover {
     background-color: #444;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Item actions */
-.itemActions {
+.dangerButton {
+    background-color: #d32f2f;
+    color: white;
+}
+
+.dangerButton:hover {
+    background-color: #b71c1c;
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
-    justify-content: flex-end;
-    margin-top: 15px;
-    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.priceActionsContainer {
+.modalContent {
+    background-color: #111;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 15px;
+    margin-bottom: 20px;
 }
 
-/* Notification styles */
+.modalTitle {
+    font-size: 1.4rem;
+    color: #fff;
+}
+
+.modalClose {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Notification */
 .notification {
     position: fixed;
     top: 20px;
@@ -369,6 +311,7 @@
     animation: fadeIn 0.3s;
     display: flex;
     align-items: center;
+    gap: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     max-width: 350px;
 }
@@ -383,19 +326,22 @@
     color: white;
 }
 
+.notificationWarning {
+    background-color: #ed6c02;
+    color: white;
+}
+
 .notificationClose {
-    margin-left: 15px;
     background: none;
     border: none;
     color: white;
     font-size: 1.2rem;
     cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s;
+    margin-left: 10px;
 }
 
-.notificationClose:hover {
-    opacity: 1;
+.notificationIcon {
+    font-size: 1.5rem;
 }
 
 @keyframes fadeIn {
@@ -403,34 +349,36 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
-    .menuLayout {
+    .flexContainer {
         flex-direction: column;
     }
     
     .categoriesSidebar {
         width: 100%;
-        position: static;
-    }
-    
-    .menuHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .headerButtons {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .button {
-        flex-grow: 1;
-        text-align: center;
+        margin-right: 0;
+        margin-bottom: 20px;
     }
     
     .menuItemsGrid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Utility classes */
+.textMuted {
+    color: #777;
+}
+
+.textCenter {
+    text-align: center;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.mb20 {
+    margin-bottom: 20px;
 }

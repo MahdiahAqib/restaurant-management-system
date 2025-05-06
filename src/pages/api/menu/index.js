@@ -2,42 +2,66 @@ import { connectDB } from "../../../lib/db";
 import MenuItem from "../../../models/MenuItem";
 
 export default async function handler(req, res) {
-  // Connect to database
   await connectDB();
 
-  // GET - Fetch all menu items with filtering options
+  // GET - Fetch all menu items or categories
   if (req.method === "GET") {
     try {
-      const { category, featured } = req.query;
-      let query = {};
+      const { category, featured, getCategories } = req.query;
       
-      // Build query based on parameters
+      if (getCategories) {
+        // Return distinct categories
+        const categories = await MenuItem.distinct("category");
+        return res.status(200).json(categories);
+      }
+      
+      let query = {};
       if (category) query.category = category;
       if (featured) query.featured = true;
       
       const menuItems = await MenuItem.find(query).sort({ 
-        featured: -1, // Featured items first
+        featured: -1,
         name: 1 
       });
       res.status(200).json(menuItems);
     } catch (err) {
       console.error("GET Error:", err);
-      res.status(500).json({ error: "Failed to fetch menu items" });
+      res.status(500).json({ error: "Failed to fetch data" });
     }
     return;
   }
 
-  // POST - Create new menu item
+  // POST - Create new menu item or category
   if (req.method === "POST") {
     try {
-      // Basic validation
+      // Handle category creation
+      if (req.body.action === "createCategory") {
+        if (!req.body.categoryName) {
+          return res.status(400).json({ error: "Category name is required" });
+        }
+        
+        // Check if category already exists
+        const existingCategory = await MenuItem.findOne({ 
+          category: req.body.categoryName 
+        });
+        
+        if (existingCategory) {
+          return res.status(400).json({ error: "Category already exists" });
+        }
+        
+        return res.status(201).json({ 
+          message: "Category created successfully",
+          category: req.body.categoryName
+        });
+      }
+
+      // Original menu item creation logic
       if (!req.body.name || !req.body.price || !req.body.category) {
         return res.status(400).json({ 
           error: "Name, price and category are required fields" 
         });
       }
 
-      // Create new item
       const newItem = await MenuItem.create({
         name: req.body.name,
         price: req.body.price,
@@ -51,7 +75,7 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error("POST Error:", err);
       res.status(400).json({ 
-        error: "Failed to create menu item",
+        error: "Failed to create item",
         details: err.message 
       });
     }
@@ -95,13 +119,21 @@ export default async function handler(req, res) {
     return;
   }
 
-  // DELETE - Remove menu item
+  // DELETE - Remove menu item or category
   if (req.method === "DELETE") {
     try {
-      const { id } = req.query;
+      const { id, category } = req.query;
+      
+      if (category) {
+        // Delete all items in this category
+        await MenuItem.deleteMany({ category });
+        return res.status(200).json({ 
+          message: `Category "${category}" and all its items deleted successfully`
+        });
+      }
       
       if (!id) {
-        return res.status(400).json({ error: "Menu item ID is required" });
+        return res.status(400).json({ error: "ID or category is required" });
       }
 
       const deletedItem = await MenuItem.findByIdAndDelete(id);
@@ -117,14 +149,13 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error("DELETE Error:", err);
       res.status(500).json({ 
-        error: "Failed to delete menu item",
+        error: "Failed to delete",
         details: err.message 
       });
     }
     return;
   }
 
-  // Handle unsupported HTTP methods
   res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
   res.status(405).json({ error: `Method ${req.method} not allowed` });
 }
