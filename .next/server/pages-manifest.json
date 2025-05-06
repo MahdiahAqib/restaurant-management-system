@@ -3,12 +3,14 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/admin/orders": "pages/admin/orders.js",
-  "/orders": "pages/orders.js",
+  "/": "pages/index.js",
+  "/api/menu": "pages/api/menu.js",
   "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
   "/login": "pages/login.js",
-  "/home": "pages/home.js",
-  "/": "pages/index.js",
-  "/api/orders/user/[userId]": "pages/api/orders/user/[userId].js",
+  "/api/send-otp": "pages/api/send-otp.js",
   "/api/verify-otp": "pages/api/verify-otp.js",
-  "/api/menu": "pages/api/menu.js"
+  "/home": "pages/home.js",
+  "/menu": "pages/menu.js",
+  "/orders": "pages/orders.js",
+  "/api/orders/user/[userId]": "pages/api/orders/user/[userId].js"
 }

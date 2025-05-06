@@ -133,6 +133,27 @@ function OrderCard({ order, isExpanded, onToggleExpand }) {
 
       {isExpanded && (
         <div className={styles.orderDetails}>
+          <div className={styles.customerDetails}>
+            <div className={styles.detailRow}>
+              <span className={styles.detailLabel}>Phone:</span>
+              <span className={styles.detailValue}>{order.phone || "N/A"}</span>
+            </div>
+            {!order.inHouse && (
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Address:</span>
+                <span className={styles.detailValue}>
+                  {order.address || "N/A"}
+                </span>
+              </div>
+            )}
+            <div className={styles.detailRow}>
+              <span className={styles.detailLabel}>Payment:</span>
+              <span className={styles.detailValue}>
+                {order.paymentMethod || "N/A"}
+              </span>
+            </div>
+          </div>
+
           <div className={styles.orderItems}>
             {order.items.map((item, index) => (
               <div key={index} className={styles.orderItem}>
