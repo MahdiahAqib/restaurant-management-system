@@ -60,45 +60,47 @@ export default function AdminOrders() {
   return (
     <AdminLayout>
       <div className={styles.adminOrdersPage}>
-        <h1 className={styles.pageTitle}>RestroAdmin</h1>
-
         <div className={styles.sectionsContainer}>
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Current Orders</h2>
-            {currentOrders.length === 0 ? (
-              <p className={styles.noOrders}>No current orders</p>
-            ) : (
-              <div className={styles.orderList}>
-                {currentOrders.map((order) => (
-                  <OrderCard
-                    key={order._id}
-                    order={order}
-                    onStatusChange={handleStatusChange}
-                    isExpanded={expandedOrder === order._id}
-                    onToggleExpand={toggleExpandOrder}
-                  />
-                ))}
-              </div>
-            )}
+            <div className={styles.orderListContainer}>
+              {currentOrders.length === 0 ? (
+                <p className={styles.noOrders}>No current orders</p>
+              ) : (
+                <div className={styles.orderList}>
+                  {currentOrders.map((order) => (
+                    <OrderCard
+                      key={order._id}
+                      order={order}
+                      onStatusChange={handleStatusChange}
+                      isExpanded={expandedOrder === order._id}
+                      onToggleExpand={toggleExpandOrder}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Order History</h2>
-            {orderHistory.length === 0 ? (
-              <p className={styles.noOrders}>No order history</p>
-            ) : (
-              <div className={styles.orderList}>
-                {orderHistory.map((order) => (
-                  <OrderCard
-                    key={order._id}
-                    order={order}
-                    isExpanded={expandedOrder === order._id}
-                    onToggleExpand={toggleExpandOrder}
-                    readonly
-                  />
-                ))}
-              </div>
-            )}
+            <div className={styles.orderListContainer}>
+              {orderHistory.length === 0 ? (
+                <p className={styles.noOrders}>No order history</p>
+              ) : (
+                <div className={styles.orderList}>
+                  {orderHistory.map((order) => (
+                    <OrderCard
+                      key={order._id}
+                      order={order}
+                      isExpanded={expandedOrder === order._id}
+                      onToggleExpand={toggleExpandOrder}
+                      readonly
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
         </div>
       </div>
