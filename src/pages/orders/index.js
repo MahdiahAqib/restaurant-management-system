@@ -1,25 +1,37 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 import UserLayout from "../../components/UserLayout";
 import styles from "../../styles/UserOrders.module.css";
 
 export default function UserOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const userId = "661c1234567890abcdef1234";
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
+    const userCookie = Cookies.get("user");
+    if (!userCookie) {
+      setIsLoggedIn(false);
+      setLoading(false);
+      return;
+    }
+
+    setIsLoggedIn(true);
+
     const fetchOrders = async () => {
       try {
-        const res = await fetch(`/api/orders?userId=${userId}`);
-        const data = await res.json();
-        console.log("Fetched Orders:", data);
+        setLoading(true);
+        const userId = JSON.parse(userCookie).id;
+        const response = await fetch(`/api/orders/user/${userId}`);
+        const data = await response.json();
         setOrders(Array.isArray(data) ? data : []);
-        setLoading(false);
       } catch (error) {
-        console.error("Error Fetching Orders", error);
-        console.log("error hai");
+        console.error("Error fetching orders:", error);
         setOrders([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -27,131 +39,134 @@ export default function UserOrders() {
     fetchOrders();
   }, []);
 
-  if (loading)
+  const toggleExpandOrder = (orderId) => {
+    setExpandedOrder(expandedOrder === orderId ? null : orderId);
+  };
+
+  if (loading) {
     return (
       <UserLayout>
-        <p className={styles.loading}>Loading Orders...</p>
+        <div className={styles.loading}>Loading orders...</div>
       </UserLayout>
     );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <UserLayout>
+        <div className={styles.error}>
+          User not logged in. Please <a href="/login">log in</a> to view orders.
+        </div>
+      </UserLayout>
+    );
+  }
 
   if (orders.length === 0) {
     return (
       <UserLayout>
-        <p className={styles.empty}>You have no orders yet.</p>
+        <div className={styles.noOrders}>You have no orders yet.</div>
       </UserLayout>
     );
   }
-  const currentOrder = orders.filter((order) => order.status !== "completed");
-  const pastOrders = orders.filter((order) => order.status === "completed");
 
   return (
     <UserLayout>
-      <main className={styles.mainContent}>
-        <h1 className={styles.accent}>Your Orders</h1>
+      <div className={styles.userOrdersPage}>
+        <h1 className={styles.pageTitle}>Your Orders</h1>
 
-        {currentOrder && (
-          <section className={styles.card}>
-            <h2>Current Order</h2>
-            {currentOrder.map((order) => (
-              <OrderCard key={order._id} order={order} />
-            ))}
-          </section>
-        )}
-
-        <section className={styles.card} style={{ marginTop: "2rem" }}>
-          <h2>Order History</h2>
-          {pastOrders.length > 0 ? (
-            pastOrders.map((order) => (
-              <OrderCard key={order._id} order={order} />
-            ))
-          ) : (
-            <p>No past orders.</p>
-          )}
-        </section>
-      </main>
-    </UserLayout>
-  );
-
-  function OrderCard({ order }) {
-    return (
-      <div
-        className={styles.card}
-        style={{
-          marginTop: "1rem",
-          padding: "1rem",
-          borderRadius: "10px",
-          backgroundColor: "#1e1e1e",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-        }}
-      >
-        {/* Order Date */}
-        <p style={{ fontSize: "0.9rem", color: "#ccc" }}>
-          <strong>Date:</strong> {new Date(order.orderTime).toLocaleString()}
-        </p>
-
-        {/* Order Items */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          {order.items.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                backgroundColor: "#2a2a2a",
-                padding: "0.5rem",
-                borderRadius: "8px",
-              }}
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                width="60"
-                height="60"
-                style={{ borderRadius: "5px", objectFit: "cover" }}
-              />
-              <div style={{ flex: "1" }}>
-                <p style={{ margin: 0, fontWeight: "bold" }}>{item.name}</p>
-                <p style={{ margin: 0, fontSize: "0.85rem", color: "#aaa" }}>
-                  Qty: {item.quantity} | Price: Rs {item.price}
-                </p>
-              </div>
-            </div>
+        <div className={styles.orderList}>
+          {orders.map((order) => (
+            <OrderCard
+              key={order._id}
+              order={order}
+              isExpanded={expandedOrder === order._id}
+              onToggleExpand={toggleExpandOrder}
+            />
           ))}
         </div>
-
-        {/* Status + Total */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "1rem",
-          }}
-        >
-          {/* Status */}
-          <p>
-            <strong>Status:</strong>{" "}
-            <span
-              className={
-                order.status === "completed"
-                  ? styles.statusCompleted
-                  : styles.statusPending
-              }
-              style={{ textTransform: "capitalize" }}
-            >
-              {order.status}
-            </span>
-          </p>
-
-          {/* Total */}
-          <p style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
-            Total: Rs {order.totalAmount}
-          </p>
-        </div>
       </div>
-    );
-  }
+    </UserLayout>
+  );
+}
+
+function OrderCard({ order, isExpanded, onToggleExpand }) {
+  const statusColors = {
+    pending: "#FFC107",
+    preparing: "#FF9800",
+    ready: "#2196F3",
+    "out for delivery": "#9C27B0",
+    completed: "#4CAF50",
+  };
+
+  const formattedDate = new Date(order.orderTime).toLocaleString();
+
+  return (
+    <div className={styles.orderCard}>
+      <div
+        className={styles.orderHeader}
+        onClick={() => onToggleExpand(order._id)}
+      >
+        <div className={styles.orderMeta}>
+          <span className={styles.orderId}>
+            Order #{order._id.slice(-6).toUpperCase()}
+          </span>
+          <span className={styles.orderDate}>{formattedDate}</span>
+        </div>
+        <div className={styles.orderSummary}>
+          <span className={styles.tableNo}>
+            {order.inHouse ? `Table ${order.tableNo || "N/A"}` : "Delivery"}
+          </span>
+          <span className={styles.totalAmount}>
+            Rs {order.totalAmount.toFixed(2)}
+          </span>
+          <span
+            className={styles.orderStatus}
+            style={{ backgroundColor: statusColors[order.status] }}
+          >
+            {order.status}
+          </span>
+        </div>
+        <button className={styles.expandButton}>
+          {isExpanded ? "▲" : "▼"}
+        </button>
+      </div>
+
+      {isExpanded && (
+        <div className={styles.orderDetails}>
+          <div className={styles.orderItems}>
+            {order.items.map((item, index) => (
+              <div key={index} className={styles.orderItem}>
+                <img
+                  src={item.image || "/placeholder-food.jpg"}
+                  alt={item.name}
+                  className={styles.orderItemImage}
+                />
+                <div className={styles.orderItemDetails}>
+                  <h3 className={styles.orderItemName}>{item.name}</h3>
+                  <div className={styles.orderItemMeta}>
+                    <span className={styles.orderItemPrice}>
+                      Rs {item.price.toFixed(2)}
+                    </span>
+                    <span className={styles.orderItemQuantity}>
+                      × {item.quantity}
+                    </span>
+                    <span className={styles.orderItemSubtotal}>
+                      Rs {(item.price * item.quantity).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.orderFooter}>
+            <div className={styles.orderTotal}>
+              <span>Total:</span>
+              <span>Rs {order.totalAmount.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

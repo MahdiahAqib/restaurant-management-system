@@ -1,35 +1,198 @@
-.mainContent {
-  background-color: #1f1f23;
+.userOrdersPage {
   padding: 2rem;
+  background-color: #000;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.noOrders,
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #f00;
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.orderCard {
+  background-color: #111;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border-left: 4px solid #f00;
+}
+
+.orderCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  cursor: pointer;
+  background-color: #222;
+}
+
+.orderMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.orderId {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+
+.orderDate {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.orderSummary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tableNo {
+  padding: 0.35rem 0.75rem;
+  background-color: #300;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.totalAmount {
+  font-weight: 600;
+  color: #fff;
+}
+
+.orderStatus {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #aaa;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.orderDetails {
+  padding: 1.25rem;
+  border-top: 1px solid #333;
+}
+
+.orderItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.orderItem {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background-color: #222;
+}
+
+.orderItemImage {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #333;
+}
+
+.orderItemDetails {
   flex: 1;
 }
 
-.accent {
-  color: #ff5722;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.orderItemName {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: #fff;
 }
 
-.card {
-  background-color: #26262c;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+.orderItemMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #aaa;
 }
 
-.statusCompleted {
-  color: #4caf50;
-  font-weight: bold;
+.orderItemPrice {
+  color: #f00;
 }
 
-.statusPending {
-  color: #ffc107;
-  font-weight: bold;
+.orderItemQuantity {
+  color: #aaa;
 }
 
-.loading,
-.empty {
-  padding: 2rem;
-  font-size: 1.2rem;
-  color: #ccc;
+.orderItemSubtotal {
+  margin-left: auto;
+  font-weight: 500;
+  color: #fff;
+}
+
+.orderFooter {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #333;
+}
+
+.orderTotal {
+  display: flex;
+  gap: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .orderSummary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .userOrdersPage {
+    padding: 1rem;
+  }
 }

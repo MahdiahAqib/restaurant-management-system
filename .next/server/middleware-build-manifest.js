@@ -25,6 +25,11 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/admin/orders": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/admin/orders.js"
+    ],
     "/home": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -35,20 +40,10 @@ globalThis.__BUILD_MANIFEST = {
       "static/chunks/main.js",
       "static/chunks/pages/login.js"
     ],
-    "/menu": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/menu.js"
-    ],
     "/orders": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/orders.js"
-    ],
-    "/reservations": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/reservations.js"
     ]
   },
   "ampFirstPages": []
