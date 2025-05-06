@@ -2,13 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/login": "pages/login.js",
-  "/api/menu": "pages/api/menu.js",
-  "/api/verify-otp": "pages/api/verify-otp.js",
   "/home": "pages/home.js",
   "/menu": "pages/menu.js",
   "/orders": "pages/orders.js",
-  "/api/orders": "pages/api/orders.js",
-  "/reservations": "pages/reservations.js",
-  "/": "pages/index.js"
+  "/api/menu": "pages/api/menu.js",
+  "/api/orders": "pages/api/orders.js"
 }
