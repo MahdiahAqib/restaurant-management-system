@@ -24,57 +24,158 @@
     font-weight: bold;
     cursor: pointer;
     border: none;
+    transition: all 0.2s ease;
   }
   
   .button:hover {
     background-color: #991b1b;
+    transform: translateY(-1px);
   }
   
   .table {
     background-color: #1f1f1f;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .table thead {
-    background-color: #333;
-  }
-  
-  .table th, .table td {
-    padding: 0.75rem;
-    text-align: left;
-  }
-  
-  .table th {
-    font-weight: bold;
-    color: #ddd;
-  }
-  
-  .table tbody tr:nth-child(even) {
-    background-color: #2a2a2a;
-  }
-  
-  .table tbody tr:hover {
-    background-color: #444;
-  }
-  
-  .input, .select {
-    background-color: #2a2a2a;
-    color: #fff;
-    padding: 0.75rem;
-    border: 1px solid #333;
-    border-radius: 8px;
+  .reservationTable {
     width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
   }
   
-  .input:focus, .select:focus {
-    outline: none;
-    border-color: #dc2626;
-  }
-  
-  .select {
+  .reservationTable thead {
     background-color: #2a2a2a;
+  }
+  
+  .reservationTable th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .reservationTable td {
+    padding: 1rem;
+    border-bottom: 1px solid #333;
+  }
+  
+  .reservationTable tbody tr {
+    transition: all 0.2s ease;
+  }
+  
+  .reservationTable tbody tr:hover {
+    background-color: #2a2a2a;
+  }
+  
+  .customerInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .customerName {
+    font-weight: 500;
     color: #fff;
+  }
+  
+  .customerContact {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+  
+  .dateTimeInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .date {
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .time {
+    font-size: 0.875rem;
+    color: #9ca3af;
+  }
+  
+  .tableNumber {
+    font-weight: 500;
+    color: #fff;
+    background-color: #2a2a2a;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  
+  .guests {
+    font-weight: 500;
+    color: #fff;
+  }
+  
+  .statusSelect {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .statusConfirmed {
+    background-color: #065f46;
+    color: #34d399;
+  }
+  
+  .statusPending {
+    background-color: #92400e;
+    color: #fbbf24;
+  }
+  
+  .statusCancelled {
+    background-color: #991b1b;
+    color: #f87171;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+  
+  .editButton, .deleteButton {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .editButton {
+    background-color: #1e40af;
+    color: #93c5fd;
+  }
+  
+  .editButton:hover {
+    background-color: #1e3a8a;
+    transform: translateY(-1px);
+  }
+  
+  .deleteButton {
+    background-color: #991b1b;
+    color: #f87171;
+  }
+  
+  .deleteButton:hover {
+    background-color: #7f1d1d;
+    transform: translateY(-1px);
   }
   
   .modal {
@@ -87,20 +188,44 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 50;
   }
   
   .modalContent {
     background-color: #1f1f1f;
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 12px;
     width: 100%;
     max-width: 400px;
     color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .modal h2 {
     margin-bottom: 1.5rem;
     font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .input, .select {
+    background-color: #2a2a2a;
+    color: #fff;
+    padding: 0.75rem;
+    border: 1px solid #333;
+    border-radius: 8px;
+    width: 100%;
+    transition: all 0.2s ease;
+  }
+  
+  .input:focus, .select:focus {
+    outline: none;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+  }
+  
+  .select {
+    background-color: #2a2a2a;
+    color: #fff;
   }
   
   .modal .button {

@@ -1,42 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
-import Cookies from 'js-cookie';
+import { useSession } from 'next-auth/react';
 import styles from '../styles/NotificationPanel.module.css';
 
-export default function NotificationPanel() {
+export default function AdminNotificationPanel() {
+  const { data: session } = useSession();
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    fetchNotifications();
-    // Set up polling for new notifications
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+    if (session?.user?.id) {
+      fetchNotifications();
+      // Set up polling for new notifications
+      const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
+      return () => clearInterval(interval);
+    }
+  }, [session]);
 
   const fetchNotifications = async () => {
     try {
-      const userCookie = Cookies.get('user');
-      let userId = '';
-      if (userCookie) {
-        try {
-          const user = JSON.parse(userCookie);
-          // Try all possible ID fields
-          userId = user._id || user.id || user.userId;
-          if (!userId) {
-            console.error('No user ID found in cookie');
-            return;
-          }
-        } catch (e) {
-          console.error('Error parsing user cookie:', e);
-          return;
-        }
-      }
-      const response = await fetch(`/api/notifications?userId=${userId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
-      }
+      const response = await fetch(`/api/notifications?userId=${session.user.id}&role=admin`);
       const data = await response.json();
       setNotifications(data);
       setUnreadCount(data.filter(n => !n.isRead).length);

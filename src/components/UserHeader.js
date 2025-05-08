@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import styles from "../styles/UserHeader.module.css";
 import Link from "next/link";
+import NotificationPanel from "./NotificationPanel";
 
 export default function UserHeader({ preLogin = false }) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -77,6 +78,7 @@ export default function UserHeader({ preLogin = false }) {
       </nav>
 
       <div className={styles.userSection}>
+        {!preLogin && <NotificationPanel />}
         {preLogin ? (
           <button onClick={handleLoginClick} className={styles.loginButton}>
             <FaUserCircle className={styles.loginIcon} />

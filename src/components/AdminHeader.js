@@ -4,6 +4,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useSession, signOut } from 'next-auth/react'; // Import useSession and signOut
 import { useRouter } from 'next/router'; // Import useRouter for navigation
 import styles from '../styles/Header.module.css';
+import AdminNotificationPanel from './AdminNotificationPanel';
 
 export default function Header() {
   const { data: session } = useSession(); // Get session data from NextAuth
@@ -27,6 +28,7 @@ export default function Header() {
   return (
     <div className={styles.header}>
       <div className={styles.headerRight}>
+        <AdminNotificationPanel />
         <div className={styles.userMenu} onClick={toggleDropdown}>
           <FaUserCircle className={styles.icon} />
           <span className={styles.greeting}>

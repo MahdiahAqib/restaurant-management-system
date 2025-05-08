@@ -41,7 +41,8 @@ export default NextAuth({
           id: user._id.toString(),
           email: user.email,
           name: user.name,
-          role: user.Role,
+          role: 'admin', // Set role directly since this is the admin collection
+          isAdmin: true, // Add isAdmin flag for backward compatibility
         };
       },
     }),
@@ -49,6 +50,7 @@ export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: "/admin/login",
@@ -56,18 +58,20 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        // When signing in
         token.role = user.role;
-        token.name = user.name; // Save name to the JWT token
+        token.isAdmin = user.isAdmin;
+        token.name = user.name;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token?.role) {
-        session.user.role = token.role;
-      }
-      if (token?.name) {
-        session.user.name = token.name; // Add name to session
-      }
+      // Add role and isAdmin to the session
+      session.user.role = token.role;
+      session.user.isAdmin = token.isAdmin;
+      session.user.name = token.name;
+      session.user.id = token.id;
       return session;
     },
   },

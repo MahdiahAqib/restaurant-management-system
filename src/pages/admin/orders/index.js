@@ -43,6 +43,11 @@ export default function AdminOrders() {
       }
     } catch (err) {
       console.error("Failed to update status", err);
+      // Show error message to user
+      const errorMessage = err.response?.data?.message || "Failed to update order status";
+      setError(errorMessage);
+      // Clear error after 3 seconds
+      setTimeout(() => setError(""), 3000);
     }
   };
 

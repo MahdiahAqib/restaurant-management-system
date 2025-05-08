@@ -88,12 +88,15 @@ const UserMenuPage = ({
         
         try {
             const orderData = {
-                user: userData._id,
+                userId: userData.id,
                 items: cart.map(item => ({
-                    menuItem: item._id,
-                    quantity: item.quantity
+                    itemId: item._id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    image: item.image,
                 })),
-                total: calculateTotal(),
+                totalAmount: calculateTotal(),
                 deliveryAddress: formData.address,
                 phone: formData.phone,
                 paymentMethod: formData.payment,
@@ -109,7 +112,10 @@ const UserMenuPage = ({
                 body: JSON.stringify(orderData)
             });
 
-            if (!response.ok) throw new Error('Order failed');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Order failed');
+            }
 
             showNotification('Order placed successfully!', 'success');
             setCart([]);
@@ -120,6 +126,7 @@ const UserMenuPage = ({
                 payment: 'cash'
             });
         } catch (error) {
+            console.error('Error placing order:', error);
             showNotification(error.message || 'Failed to place order', 'error');
         }
     };
