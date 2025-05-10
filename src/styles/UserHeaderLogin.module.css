@@ -1,0 +1,40 @@
+.header {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 15px 20px;
+    border-bottom: 3px solid #ff6600;
+  }
+  
+  .backButton {
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .backButton:hover {
+    background-color: #cc0000;
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+  
+  .logoText {
+    color: #fff;
+  }
+  
+  .logoHighlight {
+    color: #ff0000;
+  }
+  

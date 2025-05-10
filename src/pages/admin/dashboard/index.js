@@ -37,6 +37,8 @@ const Dashboard = () => {
   // State management
   const [staffCount, setStaffCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
+  const [menuItemCount, setMenuItemCount] = useState(0);
+  const [reservationCount, setReservationCount] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [timeFrameRevenueTrend, setTimeFrameRevenueTrend] = useState('Today');
   const [timeFrameSaleCategory, setTimeFrameSaleCategory] = useState('week');
@@ -63,87 +65,166 @@ const Dashboard = () => {
     }]
   };
 
-  // Fetch data from API
+  // Fetch staff count from API
   useEffect(() => {
-    const fetchDashboardStats = async () => {
+    const fetchStaffCount = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/dashboard/staff`);
+        const data = await response.json(); 
+        
+        // Directly access staffCount
+        setStaffCount(data.staffCount || 0); // Fallback to 0 if staffCount is undefined
+  
+      } catch (error) {
+        console.error("Failed to fetch staff count:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchStaffCount();
+  }, []);
+
+  // Fetch user count from API
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/dashboard/user`);
+        const data = await response.json(); 
+        
+        // Directly access userCount
+        setUserCount(data.userCount || 0); // Fallback to 0 if userCount is undefined
+
+      } catch (error) {
+        console.error("Failed to fetch user count:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchUserCount();
+  }, []);
+
+  // Fetch menu item count from API
+  useEffect(() => {
+    const fetchMenuItemCount = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/dashboard/menuItems`);
+        const data = await response.json(); 
+        
+        setMenuItemCount(data.menuItemCount || 0); // Fallback to 0
+      } catch (error) {
+        console.error("Failed to fetch menu item count:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchMenuItemCount();
+  }, []);
+
+  // Fetch reservation count from API
+  useEffect(() => {
+    const fetchTodaysReservations = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/dashboard/reservations`);
+        const data = await response.json(); 
+        
+        setReservationCount(data.reservationCount || 0); // Fallback to 0
+      } catch (error) {
+        console.error("Failed to fetch menu item count:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchTodaysReservations();
+  }, []);
+
+
+  // Fetch Sale by Category from API
+  useEffect(() => {
+    const fetchSaleByCategoryStats = async () => {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `/api/dashboard?timeframe=${timeFrameSaleCategory}&revenueFrame=${timeFrameRevenueTrend}`
+          `/api/dashboard/salesByCategory?timeframe=${timeFrameSaleCategory}`
         );
-        const data = await response.json(); // First get the complete response as 'data'
-        console.log("data:", data)
+        const data = await response.json(); // Get the complete response as 'data'
+        console.log("data:", data);
         
-        // Then destructure from 'data'
-        const {
-          staffCount = 0,
-          userCount = 0,
-          totalRevenue = 0,
-          categorySales = {},
-          dateRangeLabel = '',
-          unmatchedItems = [],
-          revenueTrend = []
-        } = data;
+        // Destructure the data object to extract the necessary values
+        const { categorySales = {}, dateRangeLabel = '' } = data;
   
-        // Update all state in one pass
-        setStaffCount(staffCount);
-        setUserCount(userCount);
-        setTotalRevenue(totalRevenue);
         setDateRangeLabel(dateRangeLabel);
   
-        // Transform category sales data for chart
+        // Prepare the category sales data for the chart
         const chartData = {
           labels: Object.keys(categorySales),
-          datasets: [{
-            label: `Sales (${timeFrameSaleCategory})`,
-            data: Object.values(categorySales),
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.7)',
-              'rgba(54, 162, 235, 0.7)',
-              'rgba(255, 206, 86, 0.7)',
-              'rgba(170, 102, 204, 0.7)',
-              'rgba(75, 192, 192, 0.7)'
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(170, 102, 204, 1)',
-              'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1,
-            borderRadius: 6
-          }]
+          datasets: [
+            {
+              label: `Sales (${timeFrameSaleCategory})`,
+              data: Object.values(categorySales),
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(170, 102, 204, 0.7)',
+                'rgba(75, 192, 192, 0.7)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(170, 102, 204, 1)',
+                'rgba(75, 192, 192, 1)'
+              ],
+              borderWidth: 1,
+              borderRadius: 6
+            }
+          ]
         };
   
         setCategoryBarData(chartData);
-        
-        // Generate labels dynamically based on selected revenue frame
-        let trendLabels = [];
-        
-        if (timeFrameRevenueTrend === 'Today') {
-          trendLabels = Array.from({ length: 24 }, (_, i) => `${i}:00`);
-        } else if (timeFrameRevenueTrend === 'This week') {
-          trendLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-        } else if (timeFrameRevenueTrend === 'This month') {
-          trendLabels = revenueTrend.map((_, i) => `Week ${i + 1}`);
-        } else if (timeFrameRevenueTrend === 'This year') {
-          trendLabels = [
-            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-          ];
-        } else if (timeFrameRevenueTrend === 'Yearly') {
-          const currentYear = new Date().getFullYear();
-          trendLabels = revenueTrend.map((_, i) => `${currentYear - 5 + i}`);
-        }
-        
+  
+      } catch (error) {
+        console.error("Failed to fetch sales by category data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    fetchSaleByCategoryStats();
+  }, [timeFrameSaleCategory]);
+  
+  
+
+
+// Fetch Revenue Trend from API
+  useEffect(() => {
+    const fetchRevenueTrend = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/dashboard/revenueTrend?revenueFrame=${timeFrameRevenueTrend}`
+        );
+        const data = await response.json();
+        console.log("Revenue Trend Data:", data);
+  
+        // Process revenue trend data
+        const trendLabels = generateTrendLabels(timeFrameRevenueTrend, data.revenueTrend);
+  
         // Revenue Trend Line Chart
         const trendChartData = {
           labels: trendLabels,
           datasets: [
             {
               label: `Revenue (${timeFrameRevenueTrend})`,
-              data: revenueTrend,
+              data: data.revenueTrend,
               borderColor: 'rgba(75, 192, 192, 1)',
               backgroundColor: 'rgba(75, 192, 192, 0.2)',
               borderWidth: 2,
@@ -152,26 +233,37 @@ const Dashboard = () => {
             }
           ]
         };
-        
-        console.log("revenueTrendData:", trendChartData);
-
+  
         setRevenueTrendData(trendChartData);
-  
-        // Now correctly using the destructured unmatchedItems
-        if (unmatchedItems.length) {
-          console.warn('Uncategorized items:', unmatchedItems);
-        }
-  
       } catch (error) {
-        console.error("Failed to fetch dashboard stats:", error);
-        // Optionally set error state here
+        console.error("Failed to fetch revenue trend data:", error);
       } finally {
         setIsLoading(false);
       }
     };
   
-    fetchDashboardStats();
-  }, [timeFrameSaleCategory, timeFrameRevenueTrend]);
+    fetchRevenueTrend();
+  }, [timeFrameRevenueTrend]);
+  
+  // Function to generate labels dynamically based on revenue frame
+  const generateTrendLabels = (revenueFrame, revenueTrendData) => {
+    switch (revenueFrame) {
+      case 'Today':
+        return Array.from({ length: 24 }, (_, i) => `${i}:00`);
+      case 'This week':
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case 'This month':
+        return revenueTrendData.map((_, i) => `Week ${i + 1}`);
+      case 'This year':
+        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      case 'Yearly':
+        const currentYear = new Date().getFullYear();
+        return revenueTrendData.map((_, i) => `${currentYear - 5 + i}`);
+      default:
+        return [];
+    }
+  };
+  
 
   // Static chart data configurations
   const orderStatusData = {
@@ -306,7 +398,7 @@ const Dashboard = () => {
         <div className={styles.metricsGrid}>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Today's Reservations</span>
-            <h2 className={styles.metricValue}>34</h2>
+            <h2 className={styles.metricValue}>{reservationCount}</h2>
           </div>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Active Orders</span>
@@ -326,7 +418,7 @@ const Dashboard = () => {
           </div>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Total Menu Items</span>
-            <h2 className={styles.metricValue}>120</h2>
+            <h2 className={styles.metricValue}>{menuItemCount}</h2>
           </div>
         </div>
 
