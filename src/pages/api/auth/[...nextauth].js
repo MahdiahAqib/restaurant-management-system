@@ -57,7 +57,7 @@ export default NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
-        token.name = user.name; // Save name to the JWT token
+        token.name = user.name; 
       }
       return token;
     },
@@ -66,7 +66,7 @@ export default NextAuth({
         session.user.role = token.role;
       }
       if (token?.name) {
-        session.user.name = token.name; // Add name to session
+        session.user.name = token.name; 
       }
       return session;
     },

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import styles from '../../../styles/Dashboard.module.css';
 import AdminLayout from '../../../components/AdminLayout';
+import { requireAdminAuth } from "../../../lib/auth";
 
 import {
   Chart as ChartJS,
@@ -33,7 +34,9 @@ ChartJS.register(
   Legend
 );
 
-const Dashboard = () => {
+export const getServerSideProps = requireAdminAuth();
+
+const Dashboard = (session) => {
   // State management
   const [staffCount, setStaffCount] = useState(0);
   const [userCount, setUserCount] = useState(0);
