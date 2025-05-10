@@ -60,18 +60,17 @@ export default NextAuth({
       if (user) {
         // When signing in
         token.role = user.role;
-        token.isAdmin = user.isAdmin;
-        token.name = user.name;
-        token.id = user.id;
+        token.name = user.name; 
       }
       return token;
     },
     async session({ session, token }) {
-      // Add role and isAdmin to the session
-      session.user.role = token.role;
-      session.user.isAdmin = token.isAdmin;
-      session.user.name = token.name;
-      session.user.id = token.id;
+      if (token?.role) {
+        session.user.role = token.role;
+      }
+      if (token?.name) {
+        session.user.name = token.name; 
+      }
       return session;
     },
   },

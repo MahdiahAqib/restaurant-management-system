@@ -1,42 +1,42 @@
 .adminOrdersPage {
   padding: 2rem;
-  background-color: #000; /* Black background */
-  color: #fff; /* White text */
+  background-color: #000;
+  color: #fff;
   min-height: 100vh;
-}
-
-.pageTitle {
-  font-size: 2rem;
-  color: #fff; /* White */
-  margin-bottom: 2rem;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .sectionsContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  flex: 1;
+  min-height: 0; /* Important for proper scrolling */
 }
 
 .section {
-  background-color: #111; /* Dark gray */
+  background-color: #111;
   border-radius: 8px;
   padding: 1.5rem;
-  border-left: 4px solid #f00; /* Red accent */
+  border-left: 4px solid #f00;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 9rem); /* Adjust based on your header height */
 }
 
 .sectionTitle {
   font-size: 1.5rem;
-  color: #fff; /* White */
+  color: #fff;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid #f00; /* Red */
+  border-bottom: 2px solid #f00;
 }
 
-.noOrders {
-  color: #aaa; /* Light gray */
-  text-align: center;
-  padding: 2rem;
+.orderListContainer {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .orderList {
@@ -45,13 +45,19 @@
   gap: 1rem;
 }
 
+.noOrders {
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+}
+
 .orderCard {
-  background-color: #111; /* Dark gray */
+  background-color: #111;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   transition: all 0.3s ease;
-  border-left: 4px solid #f00; /* Red accent */
+  border-left: 4px solid #f00;
 }
 
 .orderCard:hover {
@@ -65,7 +71,7 @@
   align-items: center;
   padding: 1.25rem;
   cursor: pointer;
-  background-color: #222; /* Slightly lighter gray */
+  background-color: #222;
 }
 
 .orderMeta {
@@ -75,13 +81,13 @@
 
 .orderId {
   font-weight: 600;
-  color: #fff; /* White */
+  color: #fff;
   margin-bottom: 0.25rem;
 }
 
 .orderDate {
   font-size: 0.85rem;
-  color: #aaa; /* Light gray */
+  color: #aaa;
 }
 
 .orderSummary {
@@ -92,15 +98,15 @@
 
 .tableNo {
   padding: 0.35rem 0.75rem;
-  background-color: #300; /* Dark red */
+  background-color: #300;
   border-radius: 20px;
-  color: #fff; /* White */
+  color: #fff;
   font-size: 0.85rem;
 }
 
 .totalAmount {
   font-weight: 600;
-  color: #fff; /* White */
+  color: #fff;
 }
 
 .orderStatus,
@@ -112,7 +118,7 @@
   font-weight: 500;
   border: none;
   cursor: pointer;
-  background-color: #222; /* Dark gray */
+  background-color: #222;
 }
 
 .statusDropdown {
@@ -128,14 +134,41 @@
   background: none;
   border: none;
   font-size: 1rem;
-  color: #aaa; /* Light gray */
+  color: #aaa;
   cursor: pointer;
   padding: 0.5rem;
 }
 
 .orderDetails {
   padding: 1.25rem;
-  border-top: 1px solid #333; /* Medium gray */
+  border-top: 1px solid #333;
+}
+
+.customerDetails {
+  background-color: #222;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detailRow {
+  display: flex;
+  gap: 1rem;
+}
+
+.detailLabel {
+  font-weight: 500;
+  color: #f00;
+  min-width: 80px;
+}
+
+.detailValue {
+  flex: 1;
+  color: #fff;
+  word-break: break-word;
 }
 
 .orderItems {
@@ -150,7 +183,7 @@
   gap: 1rem;
   padding: 0.75rem;
   border-radius: 8px;
-  background-color: #222; /* Dark gray */
+  background-color: #222;
 }
 
 .orderItemImage {
@@ -158,7 +191,7 @@
   height: 60px;
   border-radius: 8px;
   object-fit: cover;
-  border: 1px solid #333; /* Medium gray */
+  border: 1px solid #333;
 }
 
 .orderItemDetails {
@@ -168,48 +201,49 @@
 .orderItemName {
   font-weight: 500;
   margin-bottom: 0.25rem;
-  color: #fff; /* White */
+  color: #fff;
 }
 
 .orderItemMeta {
   display: flex;
   gap: 1rem;
   font-size: 0.9rem;
-  color: #aaa; /* Light gray */
+  color: #aaa;
 }
 
 .orderItemPrice {
-  color: #f00; /* Red */
+  color: #f00;
 }
 
 .orderItemQuantity {
-  color: #aaa; /* Light gray */
+  color: #aaa;
 }
 
 .orderItemSubtotal {
   margin-left: auto;
   font-weight: 500;
-  color: #fff; /* White */
+  color: #fff;
 }
 
 .orderFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #333; /* Medium gray */
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid #333;
 }
 
 .customerInfo {
-  font-size: 0.85rem;
-  color: #aaa; /* Light gray */
+  font-size: 0.8rem;
+  color: #aaa;
 }
 
 .orderTotal {
   display: flex;
   gap: 1rem;
   font-weight: 600;
-  color: #fff; /* White */
+  color: #fff;
 }
 
 .loading,
@@ -217,37 +251,37 @@
   text-align: center;
   padding: 2rem;
   font-size: 1.2rem;
-  color: #fff; /* White */
+  color: #fff;
 }
 
 .error {
-  color: #f00; /* Red */
-}
-
-/* Status colors matching the theme */
-.orderStatus.pending {
-  background-color: #d32f2f; /* Dark red */
-}
-
-.orderStatus.preparing {
-  background-color: #f57c00; /* Orange */
-}
-
-.orderStatus.ready {
-  background-color: #ffeb3b; /* Yellow */
-  color: #000; /* Black text for contrast */
-}
-
-.orderStatus.outForDelivery {
-  background-color: #2196f3; /* Blue */
-}
-
-.orderStatus.completed {
-  background-color: #2e7d32; /* Green */
+  color: #f00;
 }
 
 @media (max-width: 1024px) {
   .sectionsContainer {
     grid-template-columns: 1fr;
+  }
+
+  .section {
+    height: auto;
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .orderHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .orderSummary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .adminOrdersPage {
+    padding: 1rem;
   }
 }

@@ -1,17 +1,17 @@
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: "true",
+    required: true,
   },
   items: [
     {
       itemId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "MenuItem",
-        required: "true",
+        required: true,
       },
       name: String,
       price: Number,
@@ -27,6 +27,9 @@ const orderSchema = new mongoose.Schema({
   inHouse: { type: Boolean, default: false },
   tableNo: Number,
   totalAmount: Number,
+  address: String,
+  phone: String,
+  paymentMethod: String,
   orderTime: { type: Date, default: Date.now },
 });
 

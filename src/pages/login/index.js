@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import styles from "../../styles/UserLogin.module.css";
+import loginStyles from "../../styles/UserLogin.module.css";
+import Header from "../../components/UserHeaderLogin";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 
@@ -114,57 +115,61 @@ export default function Login() {
   };
 
   return (
-    <div className={styles.loginContainer}>
-      {step === 1 && (
-        <form className={styles.loginForm} onSubmit={handleEmailSubmit}>
-          <h2>Enter Email</h2>
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <button type="submit">Send OTP</button>
-        </form>
-      )}
-
-      {step === 2 && (
-        <form className={styles.loginForm} onSubmit={handleOtpSubmit}>
-          <h2>Enter OTP</h2>
-          <p>OTP expires in: <strong>{formatTime(timer)}</strong></p>
-          
-          <div className={styles.otpContainer}>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <input
-                key={index}
-                id={`otp-input-${index}`}
-                type="text"
-                maxLength={1}
-                value={otpDigits[index]}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                className={styles.otpInput}
-                autoFocus={index === 0}
-              />
-            ))}
-          </div>
-
-          {isNewUser && (
+    <>
+      <Header /> {/* Header appears on top */}
+  
+      <div className={loginStyles.loginContainer}>
+        {step === 1 && (
+          <form className={loginStyles.loginForm} onSubmit={handleEmailSubmit}>
+            <h2>Enter Email</h2>
             <input
-              name="name"
-              type="text"
-              placeholder="Enter Your Name"
+              name="email"
+              type="email"
+              placeholder="Email"
               required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          )}
-          {error && <p className={styles.errorMessage}>{error}</p>}
-          <button type="submit">Verify & Login</button>
-        </form>
-      )}
-    </div>
-  );
+            <button type="submit">Send OTP</button>
+          </form>
+        )}
+  
+        {step === 2 && (
+          <form className={loginStyles.loginForm} onSubmit={handleOtpSubmit}>
+            <h2>Enter OTP</h2>
+            <p>OTP expires in: <strong>{formatTime(timer)}</strong></p>
+  
+            <div className={loginStyles.otpContainer}>
+              {[0, 1, 2, 3, 4, 5].map((index) => (
+                <input
+                  key={index}
+                  id={`otp-input-${index}`}
+                  type="text"
+                  maxLength={1}
+                  value={otpDigits[index]}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                  className={loginStyles.otpInput}
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+  
+            {isNewUser && (
+              <input
+                name="name"
+                type="text"
+                placeholder="Enter Your Name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            )}
+            {error && <p className={loginStyles.errorMessage}>{error}</p>}
+            <button type="submit">Verify & Login</button>
+          </form>
+        )}
+      </div>
+    </>
+  );  
 }
