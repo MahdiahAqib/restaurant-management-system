@@ -5,11 +5,13 @@ import styles from '../styles/NotificationPanel.module.css';
 
 export default function AdminNotificationPanel() {
   const { data: session } = useSession();
+  console.log('Session in AdminNotificationPanel:', session);
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
+    //console.log('Session in AdminNotificationPanel:', session);
     if (session?.user?.id) {
       fetchNotifications();
       // Set up polling for new notifications

@@ -1,5 +1,34 @@
 import { connectDB } from '../../../lib/db';
 import Reservation from '../../../models/Reservation';
+import Notification from '../../../models/Notification';
+import mongoose from 'mongoose';
+
+// Helper function to find available table
+async function findAvailableTable(dateTime, guests) {
+  // Get all reservations for the same date and time
+  const startTime = new Date(dateTime);
+  const endTime = new Date(dateTime);
+  endTime.setHours(endTime.getHours() + 2); // Assuming 2-hour dining duration
+
+  const existingReservations = await Reservation.find({
+    dateTime: {
+      $gte: startTime,
+      $lt: endTime
+    },
+    status: { $ne: 'cancelled' }
+  });
+
+  // Get all occupied tables
+  const occupiedTables = existingReservations.map(res => res.tableNumber);
+  
+  // Find the first available table
+  let tableNumber = 1;
+  while (occupiedTables.includes(tableNumber)) {
+    tableNumber++;
+  }
+
+  return tableNumber;
+}
 
 export default async function handler(req, res) {
   await connectDB();
@@ -36,19 +65,73 @@ export default async function handler(req, res) {
         console.log('Received reservation data:', req.body);
 
         // Destructure and validate required fields
-        const { name, email, phone, guests, dateTime, tableNumber } = req.body;
+        const { name, email, phone, guests, dateTime, userId } = req.body;
 
-        if (!name || !email || !phone || !guests || !dateTime || !tableNumber) {
-          return res.status(400).json({ error: 'All fields are required' });
+        if (!name || !email || !phone || !guests || !dateTime || !userId) {
+          return res.status(400).json({ 
+            error: 'Missing required fields',
+            details: {
+              name: !name ? 'Name is required' : null,
+              email: !email ? 'Email is required' : null,
+              phone: !phone ? 'Phone is required' : null,
+              guests: !guests ? 'Number of guests is required' : null,
+              dateTime: !dateTime ? 'Date and time is required' : null,
+              userId: !userId ? 'User ID is required' : null
+            }
+          });
         }
 
-        // Create and save the reservation
-        const reservation = new Reservation(req.body);
+        // Find an available table
+        const tableNumber = await findAvailableTable(dateTime, guests);
+
+        // Create and save the reservation with the allocated table
+        const reservation = new Reservation({
+          ...req.body,
+          tableNumber,
+          status: 'confirmed'
+        });
         await reservation.save();
+
+        // Ensure we have a valid user ID
+        const userIdForNotification = reservation.userId || req.body.userId;
+        if (!userIdForNotification) {
+          console.error('No user ID available for notification');
+          return res.status(400).json({ error: 'User ID is required for notification' });
+        }
+
+        // Create a notification for the user
+        const userNotification = await Notification.create({
+          type: "reservation_created",
+          message: `Your reservation is confirmed for ${reservation.guests} guests on ${new Date(reservation.dateTime).toLocaleString()} at table ${reservation.tableNumber}.`,
+          reservationId: reservation._id,
+          userId: userIdForNotification,
+          isRead: false,
+        });
+
+        // Create a notification for the admin
+        const adminNotification = await Notification.create({
+          type: "reservation_created",
+          message: `New reservation from ${reservation.name} for ${reservation.guests} guests on ${new Date(reservation.dateTime).toLocaleString()} at table ${reservation.tableNumber}.`,
+          reservationId: reservation._id,
+          isAdmin: true,
+          isRead: false,
+        });
+
+        console.log('Created notifications:', { 
+          userNotification: userNotification._id,
+          adminNotification: adminNotification._id,
+          userId: userIdForNotification
+        });
+
         res.status(201).json(reservation);
       } catch (error) {
-        console.error('Error creating reservation:', error); // Log the error for debugging
-        res.status(400).json({ error: 'Error creating reservation' });
+        console.error('Error creating reservation:', error);
+        // Send more detailed error message
+        res.status(400).json({ 
+          error: 'Error creating reservation',
+          details: error.message,
+          validationErrors: error.errors
+        });
       }
       break;
 

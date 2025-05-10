@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Bell, X } from 'lucide-react';
+import Cookies from 'js-cookie';
+import styles from '../styles/NotificationPanel.module.css';
 
 export default function NotificationPanel() {
   const [notifications, setNotifications] = useState([]);
@@ -15,7 +17,26 @@ export default function NotificationPanel() {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch('/api/notifications');
+      const userCookie = Cookies.get('user');
+      let userId = '';
+      if (userCookie) {
+        try {
+          const user = JSON.parse(userCookie);
+          // Try all possible ID fields
+          userId = user._id || user.id || user.userId;
+          if (!userId) {
+            console.error('No user ID found in cookie');
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing user cookie:', e);
+          return;
+        }
+      }
+      const response = await fetch(`/api/notifications?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
       const data = await response.json();
       setNotifications(data);
       setUnreadCount(data.filter(n => !n.isRead).length);
@@ -33,66 +54,74 @@ export default function NotificationPanel() {
         },
         body: JSON.stringify({ isRead: true }),
       });
-      fetchNotifications();
+      
+      // Update local state immediately
+      setNotifications(prevNotifications => 
+        prevNotifications.map(notification => 
+          notification._id === id 
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
+      
+      // Update unread count
+      setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+      
+      // Refresh notifications after a short delay
+      setTimeout(fetchNotifications, 500);
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
   return (
-    <div className="relative">
+    <div className={styles.notificationPanel}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900"
+        className={styles.notificationButton}
       >
         <Bell size={24} />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-            {unreadCount}
-          </span>
+          <span className={styles.unreadDot}></span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50">
-          <div className="p-4 border-b">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Notifications</h3>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X size={20} />
-              </button>
-            </div>
+        <div className={styles.notificationDropdown}>
+          <div className={styles.notificationHeader}>
+            <h3 className={styles.notificationTitle}>Notifications</h3>
+            <button
+              onClick={() => setIsOpen(false)}
+              className={styles.closeButton}
+            >
+              <X size={20} />
+            </button>
           </div>
-          <div className="max-h-96 overflow-y-auto">
+          <div className={styles.notificationList}>
             {notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
+              <div className={styles.emptyNotification}>
                 No notifications
               </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification._id}
-                  className={`p-4 border-b hover:bg-gray-50 ${
-                    !notification.isRead ? 'bg-blue-50' : ''
+                  className={`${styles.notificationItem} ${
+                    !notification.isRead ? styles.unread : ''
                   }`}
                   onClick={() => markAsRead(notification._id)}
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {notification.message}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {new Date(notification.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                    {!notification.isRead && (
-                      <span className="inline-block w-2 h-2 bg-blue-600 rounded-full"></span>
-                    )}
+                  <div className={styles.notificationContent}>
+                    <p className={styles.notificationMessage}>
+                      {notification.message}
+                    </p>
+                    <p className={styles.notificationTime}>
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </p>
                   </div>
+                  {!notification.isRead && (
+                    <span className={styles.unreadDot}></span>
+                  )}
                 </div>
               ))
             )}
