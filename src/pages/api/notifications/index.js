@@ -10,7 +10,9 @@ export default async function handler(req, res) {
         const { userId, role } = req.query;
         let query = {};
 
+        console.log('Fetching notifications for userId:', userId, 'and role:', role);
         if (role === 'admin') {
+          console.log('Admin role detected, fetching all notifications');
           // For admin, show all notifications
           query = {
             $or: [
