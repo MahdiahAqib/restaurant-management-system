@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from '../../../styles/menu.module.css';
-
+import { requireAdminAuth } from "../../../lib/auth";
 // Icons (you can use react-icons or similar)
 const CloseIcon = () => <span>×</span>;
 const AddIcon = () => <span>+</span>;
@@ -9,6 +9,7 @@ const EditIcon = () => <span>✎</span>;
 const DeleteIcon = () => <span>🗑</span>;
 const SuccessIcon = () => <span>✓</span>;
 const ErrorIcon = () => <span>!</span>;
+export const getServerSideProps = requireAdminAuth();  
 
 const MenuPage = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -25,6 +26,7 @@ const MenuPage = () => {
   const [notification, setNotification] = useState(null);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [isNewCategory, setIsNewCategory] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,6 +101,7 @@ const MenuPage = () => {
       setMenuItems(itemsResponse.data);
       setCategories(categoriesResponse.data);
       resetForm();
+      setIsNewCategory(false); // Reset the new category flag
     } catch (error) {
       showNotification(error.response?.data?.error || error.message, 'error');
     }
@@ -160,6 +163,7 @@ const MenuPage = () => {
       image: item.image || ""
     });
     setIsAddingItem(true);
+    setIsNewCategory(false); // Ensure this is false when editing
   };
 
   const resetForm = () => {
@@ -171,6 +175,7 @@ const MenuPage = () => {
       image: ""
     });
     setIsAddingItem(false);
+    setIsNewCategory(false);
   };
 
   const handleCreateCategory = async () => {
@@ -206,11 +211,13 @@ const MenuPage = () => {
       const newCategory = newCategoryName.trim();
       setActiveCategory(newCategory);
       
-      // Update form data to include the new category
+      // Update form data to include the new category and set the flag
       setFormData(prev => ({
         ...prev,
         category: newCategory
       }));
+      setIsNewCategory(true);
+      setIsAddingItem(true);
       
     } catch (error) {
       showNotification(error.response?.data?.error || error.message, 'error');
@@ -314,6 +321,7 @@ const MenuPage = () => {
                   onClick={() => {
                     setActiveCategory(category);
                     setFormData(prev => ({ ...prev, category }));
+                    setIsNewCategory(false); // Reset when selecting a category
                   }}
                 >
                   {category}
@@ -348,6 +356,7 @@ const MenuPage = () => {
                     ...prev,
                     category: activeCategory
                   }));
+                  setIsNewCategory(false); // Reset when adding a regular item
                 }}
               >
                 <AddIcon /> Add Item
@@ -403,18 +412,28 @@ const MenuPage = () => {
                 
                 <div className={styles.formGroup}>
                   <label className={styles.formLabel}>Category</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className={`${styles.formInput} ${styles.formSelect}`}
-                    required
-                    key={categories.join(',')} // Force re-render when categories change
-                  >
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </select>
+                  {isNewCategory ? (
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      readOnly
+                      className={styles.formInput}
+                    />
+                  ) : (
+                    <select
+                      name="category"
+                      value={formData.category}
+                      onChange={handleInputChange}
+                      className={`${styles.formInput} ${styles.formSelect}`}
+                      required
+                      key={categories.join(',')} // Force re-render when categories change
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
                 
                 <div className={styles.formGroup}>
@@ -469,6 +488,7 @@ const MenuPage = () => {
                           ...prev,
                           category: activeCategory
                         }));
+                        setIsNewCategory(false);
                       }}
                     >
                       <AddIcon /> Add First Item

@@ -11,6 +11,7 @@ export default function Sidebar() {
           <li><Link href="/admin/reservations">Reservations</Link></li>
           <li><Link href="/admin/orders">Orders</Link></li>
           <li><Link href="/admin/staff">Staff</Link></li>
+          <li><Link href="/admin/menu">Menu</Link></li>
           <li><Link href="/admin/customers">Customers</Link></li>
           <li><Link href="/admin/settings">Settings</Link></li>
         </ul>
