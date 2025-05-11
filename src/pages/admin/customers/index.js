@@ -1,74 +1,181 @@
-// src/pages/admin/customers/index.js
-import React from 'react'
-import Head from 'next/head'
-import AdminLayout from '../../../components/AdminLayout';
-import styles from '../../../styles/Customers.module.css'
-import { FiFilter } from 'react-icons/fi'
-
-const mockCustomers = [
-  { id: '#C-00456', date: '26 Mar 2020, 12:42 AM', name: 'Veronica', location: '21 King Street London', spent: '$74.92', last: '$21.55' },
-  // …add more rows or fetch from API
-]
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import AdminLayout from "../../../components/AdminLayout";
+import styles from "../../../styles/Customers.module.css";
+import { FiFilter, FiTrash2, FiEye, FiSearch } from "react-icons/fi";
+import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal";
+import CustomerDetailsModal from "../../../components/CustomerDetailsModal";
 
 function CustomersPage() {
+  const [customers, setCustomers] = useState([]);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerOrders, setCustomerOrders] = useState([]);
+
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch("/api/customers");
+        if (!response.ok) throw new Error("Failed to fetch customers");
+        const data = await response.json();
+        setCustomers(data);
+        setFilteredCustomers(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCustomers();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredCustomers(customers);
+    } else {
+      const filtered = customers.filter((customer) =>
+        customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredCustomers(filtered);
+    }
+  }, [searchTerm, customers]);
+
+  const fetchCustomerOrders = async (userId) => {
+    try {
+      const response = await fetch(
+        `/api/orders/customer?userId=${userId}&limit=3`
+      );
+      if (!response.ok) throw new Error("Failed to fetch orders");
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      return [];
+    }
+  };
+
+  const handleDeleteClick = (customer) => {
+    setCustomerToDelete(customer);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`/api/customers/${customerToDelete._id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Failed to delete customer");
+
+      setCustomers(customers.filter((c) => c._id !== customerToDelete._id));
+      setFilteredCustomers(
+        filteredCustomers.filter((c) => c._id !== customerToDelete._id)
+      );
+      setShowDeleteModal(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleViewDetails = async (customer) => {
+    setSelectedCustomer(customer);
+    const orders = await fetchCustomerOrders(customer._id);
+    setCustomerOrders(orders);
+    setShowDetailsModal(true);
+  };
+
+  if (loading)
+    return <div className={styles.loading}>Loading customers...</div>;
+  if (error) return <div className={styles.error}>Error: {error}</div>;
+
   return (
     <>
       <Head>
         <title>Customers | Restaurant Admin</title>
       </Head>
+
       <div className={styles.header}>
-        <h1>General Customers</h1>
-        <button className={styles.filterBtn}>
-          <FiFilter /> Filter
-        </button>
+        <h1>Customers</h1>
+        <div className={styles.searchFilterContainer}>
+          <div className={styles.searchContainer}>
+            <FiSearch className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Search by email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+        </div>
       </div>
+
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Customer ID</th>
-              <th>Join Date</th>
-              <th>Customer Name</th>
-              <th>Location</th>
-              <th>Total Spent</th>
-              <th>Last Order</th>
-              <th></th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {mockCustomers.map(c => (
-              <tr key={c.id}>
-                <td>{c.id}</td>
-                <td>{c.date}</td>
-                <td>{c.name}</td>
-                <td>{c.location}</td>
-                <td>{c.spent}</td>
-                <td>{c.last}</td>
+            {filteredCustomers.map((customer) => (
+              <tr key={customer._id}>
+                <td>{customer.name}</td>
+                <td>{customer.email}</td>
                 <td>
                   <div className={styles.actions}>
-                    <button className={styles.actionBtn}>•••</button>
-                    <ul className={styles.dropdown}>
-                      <li>View Detail</li>
-                      <li>Edit</li>
-                      <li>Delete</li>
-                    </ul>
+                    <button
+                      className={styles.actionBtn}
+                      onClick={() => handleViewDetails(customer)}
+                    >
+                      <FiEye />
+                    </button>
+                    <button
+                      className={styles.actionBtn}
+                      onClick={() => handleDeleteClick(customer)}
+                    >
+                      <FiTrash2 />
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {filteredCustomers.length === 0 && !loading && (
+          <div className={styles.noResults}>
+            {searchTerm
+              ? "No customers found matching your search"
+              : "No customers found"}
+          </div>
+        )}
       </div>
-      <div className={styles.pagination}>
-        <button className={styles.pageBtn}>Previous</button>
-        {[1,2,3,4].map(n => (
-          <button key={n} className={`${styles.pageBtn} ${n===3?styles.active:''}`}>{n}</button>
-        ))}
-        <button className={styles.pageBtn}>Next</button>
-      </div>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        itemName={customerToDelete?.name || "this customer"}
+        itemType="customer"
+      />
+
+      <CustomerDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        customer={selectedCustomer}
+        orders={customerOrders}
+      />
     </>
-  )
+  );
 }
 
-CustomersPage.getLayout = page => <AdminLayout>{page}</AdminLayout>
-export default CustomersPage
+CustomersPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
+export default CustomersPage;

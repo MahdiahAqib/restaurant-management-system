@@ -10,7 +10,7 @@ export default function Login() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+  const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
   const [name, setName] = useState("");
   const [isNewUser, setIsNewUser] = useState(false);
   const [timer, setTimer] = useState(60);
@@ -38,18 +38,18 @@ export default function Login() {
   }, [step, timer, router]);
 
   const formatTime = (seconds) => {
-    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
+    const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+    const s = String(seconds % 60).padStart(2, "0");
     return `${m}:${s}`;
   };
 
   const handleOtpChange = (index, value) => {
-    if (value === '' || /^[0-9]$/.test(value)) {
+    if (value === "" || /^[0-9]$/.test(value)) {
       const newOtpDigits = [...otpDigits];
       newOtpDigits[index] = value;
       setOtpDigits(newOtpDigits);
-      setOtp(newOtpDigits.join(''));
-      
+      setOtp(newOtpDigits.join(""));
+
       if (value && index < 5) {
         document.getElementById(`otp-input-${index + 1}`).focus();
       }
@@ -57,7 +57,7 @@ export default function Login() {
   };
 
   const handleOtpKeyDown = (index, e) => {
-    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
       document.getElementById(`otp-input-${index - 1}`).focus();
     }
   };
@@ -77,7 +77,7 @@ export default function Login() {
       setIsNewUser(data.newUser);
       setStep(2);
       setTimer(60);
-      setOtpDigits(['', '', '', '', '', '']); // Reset OTP boxes
+      setOtpDigits(["", "", "", "", "", ""]); // Reset OTP boxes
     } else {
       alert(data.message);
     }
@@ -96,12 +96,16 @@ export default function Login() {
     const data = await res.json();
 
     if (data.success) {
-      Cookies.set("user", JSON.stringify({
-        id: data.user._id, 
-        email: data.user.email,
-        name: data.user.name,
-        role: data.user.role,
-      }), { expires: 7 });
+      Cookies.set(
+        "user",
+        JSON.stringify({
+          id: data.user._id,
+          email: data.user.email,
+          name: data.user.name,
+          role: data.user.role,
+        }),
+        { expires: 7 }
+      );
 
       if (data.user.role === "admin") {
         router.push("/admin/dashboard");
@@ -117,7 +121,6 @@ export default function Login() {
   return (
     <>
       <Header /> {/* Header appears on top */}
-  
       <div className={loginStyles.loginContainer}>
         {step === 1 && (
           <form className={loginStyles.loginForm} onSubmit={handleEmailSubmit}>
@@ -133,12 +136,14 @@ export default function Login() {
             <button type="submit">Send OTP</button>
           </form>
         )}
-  
+
         {step === 2 && (
           <form className={loginStyles.loginForm} onSubmit={handleOtpSubmit}>
             <h2>Enter OTP</h2>
-            <p>OTP expires in: <strong>{formatTime(timer)}</strong></p>
-  
+            <p>
+              OTP expires in: <strong>{formatTime(timer)}</strong>
+            </p>
+
             <div className={loginStyles.otpContainer}>
               {[0, 1, 2, 3, 4, 5].map((index) => (
                 <input
@@ -154,7 +159,7 @@ export default function Login() {
                 />
               ))}
             </div>
-  
+
             {isNewUser && (
               <input
                 name="name"
@@ -171,5 +176,5 @@ export default function Login() {
         )}
       </div>
     </>
-  );  
+  );
 }
