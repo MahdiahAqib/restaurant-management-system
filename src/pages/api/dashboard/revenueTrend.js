@@ -1,12 +1,11 @@
 import { connectDB } from '../../../lib/db';
-import { 
-  startOfWeek, 
-  endOfWeek, 
-  startOfMonth, 
+import {
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
   endOfMonth,
   addDays,
-  addWeeks,
-  addMonths,
+  addWeeks
 } from 'date-fns';
 
 export default async function handler(req, res) {
@@ -15,55 +14,53 @@ export default async function handler(req, res) {
     const db = mongooseConn.connection.db;
     const { revenueFrame = 'Today' } = req.query;
 
-    // FETCH REVENUE TREND-----------------------------------------------------
     const revenueTrend = [];
     const now = new Date();
 
-    // Corrected UTC day boundaries function
-    const getUTCDayBoundaries = (date) => {
-      const utcDate = new Date(Date.UTC(
-        date.getUTCFullYear(),
-        date.getUTCMonth(),
-        date.getUTCDate()
-      ));
-      const start = new Date(utcDate); // 00:00 UTC
-      const end = new Date(utcDate);
-      end.setUTCHours(23, 59, 59, 999); // 23:59:59.999 UTC
-      return { start, end };
+
+    const getPKTDayBoundaries = (pktDate) => {
+      const startPKT = new Date(pktDate);
+      startPKT.setHours(0, 0, 0, 0);
+
+      const endPKT = new Date(pktDate);
+      endPKT.setHours(23, 59, 59, 999);
+
+      // Convert back to UTC by subtracting 5 hours
+      const startUTC = new Date(startPKT.getTime() - 5 * 60 * 60 * 1000);
+      const endUTC = new Date(endPKT.getTime() - 5 * 60 * 60 * 1000);
+
+      return { startUTC, endUTC };
     };
 
     if (revenueFrame === 'Today') {
-      // Get today's boundaries in UTC
-      const { start: dayStart, end: dayEnd } = getUTCDayBoundaries(now);
-      
-      console.log("Today UTC Range:", dayStart.toISOString(), "to", dayEnd.toISOString());
+      const pktNow = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+      const { startUTC, endUTC } = getPKTDayBoundaries(pktNow);
+
+      console.log("Start of Today:", startUTC);
+      console.log("End of Today:", endUTC);
 
       const orders = await db.collection('orders').find({
-        orderTime: { $gte: dayStart, $lte: dayEnd },
+        orderTime: { $gte: startUTC, $lte: endUTC },
         status: 'completed'
       }).toArray();
-    
+
       const revenue = orders.reduce((sum, order) =>
         sum + order.items.reduce((s, item) => s + item.price * item.quantity, 0), 0
       );
-    
+
       revenueTrend.push(revenue);
-    }  
-     
+    }
+
     else if (revenueFrame === 'This week') {
-      // Weekly analysis using UTC boundaries
-      const weekStartUTC = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        now.getUTCDate() - now.getUTCDay() + (now.getUTCDay() === 0 ? -6 : 1) // Monday start
-      ));
+      const pktNow = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+      const weekStartPKT = startOfWeek(pktNow, { weekStartsOn: 1 });
 
       for (let i = 0; i < 7; i++) {
-        const day = addDays(weekStartUTC, i);
-        const { start: dayStart, end: dayEnd } = getUTCDayBoundaries(day);
+        const dayPKT = addDays(weekStartPKT, i);
+        const { startUTC, endUTC } = getPKTDayBoundaries(dayPKT);
 
         const orders = await db.collection('orders').find({
-          orderTime: { $gte: dayStart, $lte: dayEnd },
+          orderTime: { $gte: startUTC, $lte: endUTC },
           status: 'completed'
         }).toArray();
 
@@ -75,26 +72,22 @@ export default async function handler(req, res) {
     }
 
     else if (revenueFrame === 'This month') {
-      // Monthly analysis using UTC boundaries
-      const monthStartUTC = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth(),
-        1
-      ));
-      const nextMonthUTC = new Date(Date.UTC(
-        now.getUTCFullYear(),
-        now.getUTCMonth() + 1,
-        1
-      ));
+      const pktNow = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+      const monthStartPKT = startOfMonth(pktNow);
+      const monthEndPKT = endOfMonth(pktNow);
 
-      let weekStart = startOfWeek(monthStartUTC, { weekStartsOn: 1 });
+      let weekStartPKT = startOfWeek(monthStartPKT, { weekStartsOn: 1 });
 
-      while (weekStart < nextMonthUTC) {
-        const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-        const clampedEnd = weekEnd < nextMonthUTC ? weekEnd : endOfMonth(monthStartUTC);
+      while (weekStartPKT < monthEndPKT) {
+        const weekEndPKT = endOfWeek(weekStartPKT, { weekStartsOn: 1 });
+        const clampedEndPKT = weekEndPKT > monthEndPKT ? monthEndPKT : weekEndPKT;
+
+        // Convert weekStart and clampedEnd to UTC
+        const startUTC = new Date(weekStartPKT.getTime() - 5 * 60 * 60 * 1000);
+        const endUTC = new Date(clampedEndPKT.getTime() - 5 * 60 * 60 * 1000 + (23 * 60 + 59) * 60 * 1000 + 999);
 
         const orders = await db.collection('orders').find({
-          orderTime: { $gte: weekStart, $lte: clampedEnd },
+          orderTime: { $gte: startUTC, $lte: endUTC },
           status: 'completed'
         }).toArray();
 
@@ -102,20 +95,14 @@ export default async function handler(req, res) {
           sum + order.items.reduce((s, item) => s + item.price * item.quantity, 0), 0);
 
         revenueTrend.push(revenue);
-        weekStart = addWeeks(weekStart, 1);
+        weekStartPKT = addWeeks(weekStartPKT, 1);
       }
     }
 
     else if (revenueFrame === 'This year') {
-      // Yearly analysis using UTC boundaries
       for (let month = 0; month < 12; month++) {
         const monthStart = new Date(Date.UTC(now.getUTCFullYear(), month, 1));
-        const monthEnd = new Date(Date.UTC(
-          now.getUTCFullYear(),
-          month + 1,
-          0,
-          23, 59, 59, 999
-        ));
+        const monthEnd = new Date(Date.UTC(now.getUTCFullYear(), month + 1, 0, 23, 59, 59, 999));
 
         const orders = await db.collection('orders').find({
           orderTime: { $gte: monthStart, $lte: monthEnd },
@@ -130,7 +117,6 @@ export default async function handler(req, res) {
     }
 
     else if (revenueFrame === 'Yearly') {
-      // Multi-year analysis using UTC boundaries
       const currentYear = now.getUTCFullYear();
       for (let year = currentYear - 5; year <= currentYear; year++) {
         const yearStart = new Date(Date.UTC(year, 0, 1));
@@ -154,9 +140,9 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error("Dashboard API error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Internal Server Error',
-      details: error.message 
+      details: error.message
     });
   }
 }

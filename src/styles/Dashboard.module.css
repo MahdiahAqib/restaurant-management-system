@@ -248,11 +248,7 @@
     align-items: flex-start;
     gap: 10px;
   }
-  
-  .timeFrameDropdown {
-    margin-left: 0;
-    align-self: flex-start;
-  }
+
 }
 
 /* styles.module.css */

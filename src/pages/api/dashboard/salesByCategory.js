@@ -1,5 +1,5 @@
 import { connectDB } from '../../../lib/db';
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 export default async function handler(req, res) {
   try {
@@ -7,44 +7,45 @@ export default async function handler(req, res) {
     const db = mongooseConn.connection.db;
     const { timeframe = 'day' } = req.query;
 
-    // Get current date in pure UTC (ignoring local timezone)
+    // Get current date in UTC
     const nowUTC = new Date();
-    const currentUTCDate = new Date(Date.UTC(
-      nowUTC.getUTCFullYear(),
-      nowUTC.getUTCMonth(),
-      nowUTC.getUTCDate()
-    ));
 
     let startDate, endDate, dateRangeLabel;
 
     switch (timeframe) {
       case 'day':
-        // Fixed UTC boundaries (00:00 to 23:59 UTC)
-        startDate = new Date(currentUTCDate); // 00:00 UTC
-        endDate = new Date(currentUTCDate);
-        endDate.setUTCHours(23, 59, 59, 999); // 23:59:59.999 UTC
-        
-        dateRangeLabel = `Today (${startDate.toISOString().split('T')[0]})`;
+        startDate = startOfDay(nowUTC);
+        endDate = endOfDay(nowUTC);
+        // Add 5 hours to convert from UTC to PKT (Pakistan Standard Time)
+        const startDatePKT = new Date(startDate.getTime() + 5 * 60 * 60 * 1000); // Add 5 hours for PKT
+        dateRangeLabel = `Today (${startDatePKT.toISOString().split('T')[0]})`;
         break;
 
       case 'week':
-        startDate = startOfWeek(currentUTCDate, { weekStartsOn: 1 });
-        endDate = endOfWeek(currentUTCDate, { weekStartsOn: 1 });
-        dateRangeLabel = `${startDate.toISOString().split('T')[0]} - ${endDate.toISOString().split('T')[0]}`;
+        startDate = startOfWeek(nowUTC, { weekStartsOn: 1 });
+        endDate = endOfWeek(nowUTC, { weekStartsOn: 1 });
+
+        // Convert to PKT (UTC +5)
+        const startDatePKTWeek = new Date(startDate.getTime() + 5 * 60 * 60 * 1000);
+        const endDatePKTWeek = new Date(endDate.getTime() + 5 * 60 * 60 * 1000);
+
+        dateRangeLabel = `${startDatePKTWeek.toISOString().split('T')[0]} - ${endDatePKTWeek.toISOString().split('T')[0]}`;
         break;
 
       case 'month':
-        startDate = startOfMonth(currentUTCDate);
-        endDate = endOfMonth(currentUTCDate);
-        dateRangeLabel = startDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+        // Use nowUTC for 'month' timeframe
+        startDate = startOfMonth(nowUTC);
+        endDate = endOfMonth(nowUTC);
+
+        // Convert to PKT for label
+        const startDatePKTMonth = new Date(startDate.getTime() + 5 * 60 * 60 * 1000);
+        dateRangeLabel = startDatePKTMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
         break;
+
 
       default:
         return res.status(400).json({ error: 'Invalid timeframe' });
     }
-
-    //console.log("UTC Start Date:", startDate.toISOString());
-    //console.log("UTC End Date:", endDate.toISOString());
 
     // Fetch orders within the UTC date range
     const orders = await db.collection('orders').find({

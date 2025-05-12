@@ -47,6 +47,27 @@ const Dashboard = (session) => {
   const [timeFrameSaleCategory, setTimeFrameSaleCategory] = useState('week');
   const [topSellingItems, setTopSellingItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(true);
+  const [paymentData, setPaymentData] = useState({
+    labels: [],
+    datasets: [{
+      label: 'Orders by Payment Type',
+      data: [],
+      backgroundColor: [
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(255, 99, 132, 0.7)',
+        'rgba(255, 206, 86, 0.7)',
+        'rgba(54, 162, 235, 0.7)'
+      ],
+      borderColor: [
+        'rgba(75, 192, 192, 1)',
+        'rgba(255, 99, 132, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(54, 162, 235, 1)'
+      ],
+      borderWidth: 1,
+      borderRadius: 6
+    }]
+  });
   const [completedOrders, setCompletedOrders] = useState(0);
   const [orderStatusData, setOrderStatusData] = useState({
   labels: [],
@@ -355,6 +376,46 @@ useEffect(() => {
         // Call the function to fetch total revenue today
         fetchTotalRevenueToday();
     }, []);
+
+    //fetch payment data
+
+    useEffect(() => {
+  const fetchPaymentData = async () => {
+    try {
+      const response = await fetch('/api/dashboard/paymentType');
+      if (!response.ok) {
+        throw new Error('Failed to fetch payment data');
+      }
+      const data = await response.json();
+
+      setPaymentData({
+        labels: data.labels,
+        datasets: [{
+          label: 'Orders by Payment Type',
+          data: data.counts,
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(255, 99, 132, 0.7)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      });
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPaymentData();
+}, []);
+
   
   // Function to generate labels dynamically based on revenue frame
   const generateTrendLabels = (revenueFrame, revenueTrendData) => {
@@ -400,27 +461,6 @@ useEffect(() => {
     }]
   };*/
 
-  const customerRatingData = {
-    labels: ['Food Quality', 'Service', 'Ambiance', 'Value'],
-    datasets: [{
-      label: 'Ratings (out of 5)',
-      data: [4.5, 4.2, 4.7, 4.3],
-      backgroundColor: [
-        'rgba(75, 192, 192, 0.7)',
-        'rgba(255, 206, 86, 0.7)',
-        'rgba(255, 99, 132, 0.7)',
-        'rgba(54, 162, 235, 0.7)'
-      ],
-      borderColor: [
-        'rgba(75, 192, 192, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)'
-      ],
-      borderWidth: 1,
-      borderRadius: 6
-    }]
-  };
 
   const chartOptions = {
     responsive: true,
@@ -609,11 +649,11 @@ useEffect(() => {
             </div>
           </div>
           <div className={styles.chartBox}>
-            <div className={styles.chartTitle}>Customer Ratings</div>
-            <div className={`${styles.chartContent} ${styles.barChart}`}>
-              <Bar data={customerRatingData} options={chartOptions} />
-            </div>
+          <div className={styles.chartTitle}>Orders By Payment Type</div>
+          <div className={`${styles.chartContent} ${styles.barChart}`}>
+            <Bar data={paymentData} options={chartOptions} />
           </div>
+        </div>
         </div>
 
         {/* Third row of charts 

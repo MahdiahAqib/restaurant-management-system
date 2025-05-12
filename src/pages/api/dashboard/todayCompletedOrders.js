@@ -10,11 +10,8 @@ export default async function handler(req, res) {
         const todayStart = startOfDay(new Date());
         const todayEnd = endOfDay(new Date());
         
-        /*console.log('Querying for orders between:', 
-            format(todayStart, 'yyyy-MM-dd HH:mm:ss'), 
-            'and', 
-            format(todayEnd, 'yyyy-MM-dd HH:mm:ss')
-        );*/
+        //console.log("Start of Today:", todayStart);
+        //console.log("End of Today:", todayEnd);
 
         // Count completed orders today
         const completedOrdersCount = await db.collection('orders').countDocuments({

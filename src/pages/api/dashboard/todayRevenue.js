@@ -9,15 +9,12 @@ export default async function handler(req, res) {
         // Get the current time in UTC
         const nowUTC = new Date();
 
-        // Convert current UTC time to Pakistan Standard Time (UTC +5)
-        const nowPST = new Date(nowUTC.getTime() + 5 * 60 * 60 * 1000); // Add 5 hours for PST
+        // Get the start and end of the day
+        const startOfPSTDay = startOfDay(nowUTC);
+        const endOfPSTDay = endOfDay(nowUTC);
 
-        // Get the start and end of the day in Pakistan Standard Time
-        const startOfPSTDay = startOfDay(nowPST);
-        const endOfPSTDay = endOfDay(nowPST);
-
-        console.log("Start of PST Day:", startOfPSTDay);
-        console.log("End of PST Day:", endOfPSTDay);
+        //console.log("Start of PST Day:", startOfPSTDay);
+        //console.log("End of PST Day:", endOfPSTDay);
 
         // Fetch completed orders from the reservations collection
         const orders = await db.collection('orders').aggregate([
@@ -35,7 +32,7 @@ export default async function handler(req, res) {
             },
         ]).toArray();
 
-        console.log("Today's Revenue:", orders);
+        //console.log("Today's Revenue:", orders);
 
         // Return the total revenue
         if (orders.length > 0) {
