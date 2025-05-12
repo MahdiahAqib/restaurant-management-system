@@ -43,8 +43,8 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Invalid timeframe' });
     }
 
-    console.log("UTC Start Date:", startDate.toISOString());
-    console.log("UTC End Date:", endDate.toISOString());
+    //console.log("UTC Start Date:", startDate.toISOString());
+    //console.log("UTC End Date:", endDate.toISOString());
 
     // Fetch orders within the UTC date range
     const orders = await db.collection('orders').find({

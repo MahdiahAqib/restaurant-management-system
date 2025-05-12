@@ -45,6 +45,27 @@ const Dashboard = (session) => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [timeFrameRevenueTrend, setTimeFrameRevenueTrend] = useState('Today');
   const [timeFrameSaleCategory, setTimeFrameSaleCategory] = useState('week');
+  const [topSellingItems, setTopSellingItems] = useState([]);
+  const [loadingItems, setLoadingItems] = useState(true);
+  const [completedOrders, setCompletedOrders] = useState(0);
+  const [orderStatusData, setOrderStatusData] = useState({
+  labels: [],
+  datasets: [{
+    data: [],
+    backgroundColor: [
+      '#4CAF50', // Completed
+      '#FFC107', // Pending
+      '#2196F3', // Preparing
+      '#9C27B0', // Ready
+      '#00BCD4' // Out for Delivery
+    ],
+    borderColor: '#1e1e1e',
+    borderWidth: 2,
+    hoverOffset: 10
+  }]
+});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [categoryBarData, setCategoryBarData] = useState({
     labels: [],
     datasets: []
@@ -67,6 +88,14 @@ const Dashboard = (session) => {
       borderWidth: 1
     }]
   };
+
+  const statusColors = {
+  'completed': '#4CAF50',
+  'pending': '#FFC107',
+  'preparing': '#2196F3',
+  'ready': '#9C27B0',
+  'out for delivery': '#00BCD4'
+};
 
   // Fetch staff count from API
   useEffect(() => {
@@ -137,7 +166,7 @@ const Dashboard = (session) => {
         const response = await fetch(`/api/dashboard/reservations`);
         const data = await response.json(); 
         
-        setReservationCount(data.reservationCount || 0); // Fallback to 0
+        setReservationCount(data.count || 0); // Fallback to 0
       } catch (error) {
         console.error("Failed to fetch menu item count:", error);
       } finally {
@@ -247,6 +276,85 @@ const Dashboard = (session) => {
   
     fetchRevenueTrend();
   }, [timeFrameRevenueTrend]);
+
+  // Fetch Order Status Breakdown from API
+ useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await fetch('/api/dashboard/orderStatusBreakdown');
+      const result = await res.json();
+      //console.log('API result:', result);
+
+      const labels = result.map(item => item.label);
+      const data = result.map(item => item.count);
+
+      setOrderStatusData({
+        labels: labels,
+        datasets: [{
+          label: 'Count',
+          data: data,
+          backgroundColor: [
+            '#36A2EB', '#FFCE56', '#FF6384', '#4BC0C0', '#9966FF'
+          ],
+          borderWidth: 1
+        }]
+      });
+
+      //console.log('Mapped labels:', labels);
+      //console.log('Mapped counts:', data);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+  fetchData();
+}, []);
+
+  // Fetch Top Selling Items from API
+  useEffect(() => {
+    const fetchTopSellingItems = async () => {
+        try {
+            const response = await fetch('/api/dashboard/topSellingItems');
+            const data = await response.json();
+            setTopSellingItems(data);
+        } catch (error) {
+            console.error('Failed to fetch top selling items:', error);
+        } finally {
+            setLoadingItems(false);
+        }
+    };
+    fetchTopSellingItems();
+}, []);
+
+//Fetch Today's Completed Orders
+
+useEffect(() => {
+    const fetchCompletedOrders = async () => {
+        try {
+            const response = await fetch('/api/dashboard/todayCompletedOrders');
+            const data = await response.json();
+            setCompletedOrders(data.count);
+        } catch (error) {
+            console.error('Failed to fetch completed orders:', error);
+        }
+    };
+    fetchCompletedOrders();
+}, []);
+
+//Fetch total revenue today
+ useEffect(() => {
+        const fetchTotalRevenueToday = async () => {
+            try {
+                const response = await fetch('/api/dashboard/todayRevenue');
+                const data = await response.json();
+                setTotalRevenue(data.totalRevenue || 0); // Fallback to 0 if totalRevenue is undefined
+            } catch (error) {
+                console.error('Failed to fetch completed orders:', error);
+            }
+        };
+
+        // Call the function to fetch total revenue today
+        fetchTotalRevenueToday();
+    }, []);
   
   // Function to generate labels dynamically based on revenue frame
   const generateTrendLabels = (revenueFrame, revenueTrendData) => {
@@ -266,28 +374,15 @@ const Dashboard = (session) => {
         return [];
     }
   };
-  
-
-  // Static chart data configurations
-  const orderStatusData = {
-    labels: ['Completed', 'Pending', 'Cancelled'],
-    datasets: [{
-      data: [70, 20, 10],
-      backgroundColor: ['#4CAF50', '#FFC107', '#F44336'],
-      borderColor: '#1e1e1e',
-      borderWidth: 2,
-      hoverOffset: 10
-    }]
-  };
 
 
-  const customerTrendData = {
+  /*const customerTrendData = {
     day: [100, 120, 150, 80, 90, 110, 130],
     week: [800, 1000, 1200, 900, 1100, 1250, 1300],
     month: [3500, 4000, 4500, 4300, 4600, 4700, 4800],
-  };
+  };*/
 
-  const customerLineData = {
+  /*const customerLineData = {
     labels: timeFrameRevenueTrend === 'day' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] :
             timeFrameRevenueTrend === 'week' ? ['Week 1', 'Week 2', 'Week 3', 'Week 4'] :
             ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
@@ -303,7 +398,7 @@ const Dashboard = (session) => {
       pointHoverRadius: 6,
       borderWidth: 2
     }]
-  };
+  };*/
 
   const customerRatingData = {
     labels: ['Food Quality', 'Service', 'Ambiance', 'Value'],
@@ -377,16 +472,45 @@ const Dashboard = (session) => {
   };
 
   const doughnutOptions = {
-    ...chartOptions,
-    cutout: '65%',
-    plugins: {
-      ...chartOptions.plugins,
-      legend: {
-        ...chartOptions.plugins.legend,
-        position: 'bottom'
+  ...chartOptions,
+  cutout: '65%',
+  plugins: {
+    ...chartOptions.plugins,
+    legend: {
+      ...chartOptions.plugins?.legend,
+      position: 'bottom',
+      labels: {
+        ...chartOptions.plugins?.legend?.labels,
+        font: {
+          size: 10,
+        },
+        boxWidth: 10,
       }
     }
-  };
+  },
+  scales: {
+    // For Doughnut Chart, both x and y axes are typically hidden
+    x: {
+      grid: {
+        display: false, // Hide grid lines for x-axis
+      },
+      ticks: {
+        display: false, // Hide x-axis labels
+      }
+    },
+    y: {
+      grid: {
+        display: false, // Hide grid lines for y-axis
+      },
+      ticks: {
+        display: false, // Hide y-axis labels
+      }
+    }
+  }
+};
+
+
+
 
   return (
     <>
@@ -404,8 +528,8 @@ const Dashboard = (session) => {
             <h2 className={styles.metricValue}>{reservationCount}</h2>
           </div>
           <div className={styles.metricCard}>
-            <span className={styles.metricTitle}>Active Orders</span>
-            <h2 className={styles.metricValue}>12</h2>
+            <span className={styles.metricTitle}>Today's Completed Orders</span>
+            <h2 className={styles.metricValue}>{completedOrders}</h2>
           </div>
           <div className={styles.metricCard}>
             <span className={styles.metricTitle}>Total Revenue</span>
@@ -427,12 +551,12 @@ const Dashboard = (session) => {
 
         {/* First row of charts */}
         <div className={styles.chartRow}>
-          <div className={styles.chartBox}>
-            <div className={styles.chartTitle}>Order Status Breakdown</div>
-            <div className={`${styles.chartContent} ${styles.doughnutChart}`}>
-              <Doughnut data={orderStatusData} options={doughnutOptions} />
-            </div>
+         <div className={styles.chartBox}>
+          <div className={styles.chartTitle}>Order Status Breakdown</div>
+          <div className={`${styles.chartContent} ${styles.doughnutChart}`}>
+            <Doughnut data={orderStatusData} options={doughnutOptions} />
           </div>
+        </div>
           <div className={styles.chartBox}>
             <div className={styles.chartTitle}>
               Revenue Trend
@@ -492,7 +616,7 @@ const Dashboard = (session) => {
           </div>
         </div>
 
-        {/* Third row of charts */}
+        {/* Third row of charts 
         <div className={styles.chartRow}>
           <div className={styles.chartBox}>
             <div className={styles.chartTitle}>Customer Visits Trend</div>
@@ -500,38 +624,40 @@ const Dashboard = (session) => {
               <Line data={customerLineData} options={chartOptions} />
             </div>
           </div>
-        </div>
+        </div> */}
 
-        {/* Top Selling Items Table */}
-        <div className={styles.tableBox}>
+      {/* Top Selling Items Table */}
+      <div className={styles.tableBox}>
           <h3 className={styles.chartTitle}>Top Selling Items</h3>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Orders</th>
-                <th>Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>🍔 Cheese Burger</td>
-                <td>120</td>
-                <td>$600</td>
-              </tr>
-              <tr>
-                <td>🍕 Margherita Pizza</td>
-                <td>90</td>
-                <td>$720</td>
-              </tr>
-              <tr>
-                <td>🥤 Chocolate Shake</td>
-                <td>80</td>
-                <td>$320</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+          {loadingItems ? (
+              <div className={styles.loadingPlaceholder}>Loading top items...</div>
+          ) : (
+              <table className={styles.table}>
+                  <thead>
+                      <tr>
+                          <th>Item</th>
+                          <th>Orders</th>
+                          <th>Revenue</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {topSellingItems.length > 0 ? (
+                          topSellingItems.map((item, index) => (
+                              <tr key={index}>
+                                  <td>{item.name}</td>
+                                  <td>{item.orders}</td>
+                                  <td>${item.revenue.toFixed(2)}</td>
+                              </tr>
+                          ))
+                      ) : (
+                          <tr>
+                              <td colSpan="3" className={styles.noData}>No data available</td>
+                          </tr>
+                      )}
+                  </tbody>
+              </table>
+          )}
+      </div>
       </div>
     </>
   );

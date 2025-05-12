@@ -5,7 +5,7 @@ import styles from '../styles/NotificationPanel.module.css';
 
 export default function AdminNotificationPanel() {
   const { data: session } = useSession();
-  console.log('Session in AdminNotificationPanel:', session);
+  //console.log('Session in AdminNotificationPanel:', session);
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);

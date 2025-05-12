@@ -8,6 +8,8 @@ export default async function handler(req, res) {
         res.status(200).json({
             userCount
           });
+
+          //console.log("User count is: ", userCount);
     } catch (error) 
     {
         console.error("Dashboard API error:", error);
