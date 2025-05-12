@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import AdminLayout from "../../../components/AdminLayout";
 import styles from "../../../styles/Customers.module.css";
-import { FiFilter, FiTrash2, FiEye, FiSearch } from "react-icons/fi";
+import { FiTrash2, FiEye, FiSearch } from "react-icons/fi";
 import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal";
 import CustomerDetailsModal from "../../../components/CustomerDetailsModal";
+import { requireAdminAuth } from "../../../lib/auth";
 
-function CustomersPage() {
+export const getServerSideProps = requireAdminAuth();
+
+const CustomersPage = (session) => {
   const [customers, setCustomers] = useState([]);
   const [filteredCustomers, setFilteredCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -175,7 +178,7 @@ function CustomersPage() {
       />
     </>
   );
-}
+};
 
 CustomersPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 export default CustomersPage;

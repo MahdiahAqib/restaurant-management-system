@@ -5,8 +5,11 @@ import DeleteConfirmationModal from "../../../components/DeleteConfirmationModal
 import EditStaffModal from "../../../components/EditStaffModal";
 import styles from "../../../styles/Staff.module.css";
 import AddStaffModal from "../../../components/AddStaffModal";
+import { requireAdminAuth } from "../../../lib/auth";
 
-function StaffPage() {
+export const getServerSideProps = requireAdminAuth();
+
+const StaffPage = (session) => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -215,7 +218,7 @@ function StaffPage() {
       />
     </>
   );
-}
+};
 
 StaffPage.getLayout = (page) => <AdminLayout>{page}</AdminLayout>;
 

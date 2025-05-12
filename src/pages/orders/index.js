@@ -3,8 +3,11 @@ import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import UserLayout from "../../components/UserLayout";
 import styles from "../../styles/UserOrders.module.css";
+import { requireCustomerAuth } from "../../lib/customerAuth";
 
-export default function UserOrders() {
+export const getServerSideProps = requireCustomerAuth();
+
+const UserOrders = (session) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -13,12 +16,6 @@ export default function UserOrders() {
 
   useEffect(() => {
     const userCookie = Cookies.get("user");
-    if (!userCookie) {
-      setIsLoggedIn(false);
-      setLoading(false);
-      return;
-    }
-
     setIsLoggedIn(true);
 
     const fetchOrders = async () => {
@@ -87,7 +84,9 @@ export default function UserOrders() {
       </div>
     </UserLayout>
   );
-}
+};
+
+export default UserOrders;
 
 function OrderCard({ order, isExpanded, onToggleExpand }) {
   const statusColors = {

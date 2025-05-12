@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AdminLayout from "../../../components/AdminLayout";
 import styles from "../../../styles/AdminOrders.module.css";
+import { requireAdminAuth } from "../../../lib/auth";
 
-export default function AdminOrders() {
+export const getServerSideProps = requireAdminAuth();
+
+const AdminOrders = (session) => {
   const [currentOrders, setCurrentOrders] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +47,8 @@ export default function AdminOrders() {
     } catch (err) {
       console.error("Failed to update status", err);
       // Show error message to user
-      const errorMessage = err.response?.data?.message || "Failed to update order status";
+      const errorMessage =
+        err.response?.data?.message || "Failed to update order status";
       setError(errorMessage);
       // Clear error after 3 seconds
       setTimeout(() => setError(""), 3000);
@@ -111,7 +115,9 @@ export default function AdminOrders() {
       </div>
     </AdminLayout>
   );
-}
+};
+
+export default AdminOrders;
 
 function OrderCard({
   order,
