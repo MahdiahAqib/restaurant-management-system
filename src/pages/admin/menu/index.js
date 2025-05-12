@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from '../../../styles/menu.module.css';
 import { requireAdminAuth } from "../../../lib/auth";
+import AdminLayout from "../../../components/AdminLayout";
 // Icons (you can use react-icons or similar)
 const CloseIcon = () => <span>×</span>;
 const AddIcon = () => <span>+</span>;
@@ -229,6 +230,7 @@ const MenuPage = () => {
     : [];
 
   return (
+    <AdminLayout>
     <div className={styles.menuContainer}>
       {/* Notification */}
       {notification && (
@@ -538,6 +540,7 @@ const MenuPage = () => {
         </div>
       </div>
     </div>
+    </AdminLayout>
   );
 };
 
