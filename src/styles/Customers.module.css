@@ -1,109 +1,211 @@
-/* styles/Customers.module.css */
+/* Header */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  color: white;
+}
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #2a2a2a;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filterBtn:hover {
+  background: #3a3a3a;
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #e0e0e0;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.table th {
+  color: #aaa;
+  font-weight: 500;
+  background: #2a2a2a;
+}
+
+.table tbody tr:hover {
+  background: #2a2a2a;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  transition: color 0.2s;
+}
+
+.actionBtn:hover {
+  color: white;
+}
+
+.actionBtn:first-child:hover {
+  color: #4caf50; /* Green for view */
+}
+
+.actionBtn:last-child:hover {
+  color: #f44336; /* Red for delete */
+}
+
+/* Loading and Error States */
+.loading {
+  padding: 2rem;
+  text-align: center;
+  color: #aaa;
+}
+
+.error {
+  padding: 1.5rem;
+  text-align: center;
+  background: #f44336;
+  color: white;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
-  .header h1 {
-    font-size: 1.75rem;
-    color: white;
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
   }
-  .filterBtn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: #1e1e1e;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-  }
-  .filterBtn:hover {
-    background: #2a2a2a;
-  }
-  
-  .tableWrapper {
-    overflow-x: auto;
-    background: #1e1e1e;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    color: #ddd;
-  }
-  .table th, .table td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-  }
-  .table th {
-    border-bottom: 2px solid #333;
-    color: #aaa;
-  }
-  .table tbody tr {
-    border-bottom: 1px solid #2a2a2a;
-  }
-  .table tbody tr:hover {
-    background: #2a2a2a;
-  }
-  
+
   .actions {
-    position: relative;
-    display: inline-block;
+    flex-direction: column;
+    gap: 0.25rem;
   }
-  .actionBtn {
-    background: none;
-    border: none;
-    color: #aaa;
-    cursor: pointer;
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  position: relative;
+}
+
+.closeError {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+/* Search Styles */
+.searchContainer {
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  position: relative;
+  display: flex;
+  color: white;
+  align-items: center;
+  background: #2a2a2a;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  width: 300px;
+}
+
+.searchInput input {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  width: 100%;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+.searchInput input:focus {
+  outline: none;
+}
+
+.searchIcon {
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+/* No Results Message */
+.noResults {
+  padding: 2rem;
+  text-align: center;
+  color: #aaa;
+  font-size: 1.1rem;
+  background: #1e1e1e;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Header adjustments */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .searchInput {
+    width: 100%;
   }
-  .actionBtn:hover {
-    color: white;
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  .dropdown {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 1.5rem;
-    background: #1e1e1e;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    list-style: none;
-    padding: 0.5rem 0;
-  }
-  .actions:hover .dropdown {
-    display: block;
-  }
-  .dropdown li {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    color: #ddd;
-  }
-  .dropdown li:hover {
-    background: #2a2a2a;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-  .pageBtn {
-    background: #1e1e1e;
-    color: white;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .pageBtn:hover {
-    background: #2a2a2a;
-  }
-  .pageBtn.active {
-    background: #ff5c5c;
-  }
-  
+}
