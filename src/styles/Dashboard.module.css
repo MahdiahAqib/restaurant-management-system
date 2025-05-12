@@ -248,11 +248,7 @@
     align-items: flex-start;
     gap: 10px;
   }
-  
-  .timeFrameDropdown {
-    margin-left: 0;
-    align-self: flex-start;
-  }
+
 }
 
 /* styles.module.css */
@@ -260,4 +256,17 @@
   color: #c13c3c;
   font-weight: 500;
   margin-bottom: 0.2rem;
+}
+
+.loadingPlaceholder {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+}
+
+.noData {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
 }

@@ -4,7 +4,7 @@ import styles from '../styles/Sidebar.module.css'
 export default function Sidebar() {
   return (
     <div className={styles.sidebar}>
-      <h2 className={styles.logo}>RestroAdmin</h2>
+      <h2 className={styles.logo}>Admin</h2>
       <nav>
         <ul className={styles.navList}>
           <li><Link href="/admin/dashboard">Dashboard</Link></li>
